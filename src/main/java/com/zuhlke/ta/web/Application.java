@@ -22,8 +22,8 @@ import static spark.Spark.post;
 public class Application {
     public static void main(String[] args) throws IOException {
         SentimentAnalyzer sentimentAnalyzer = new TwitterSentimentAnalyzerImpl();
-//        TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
-        TweetService tweetService = new MapDBTweetService(sentimentAnalyzer);
+        TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
+//        TweetService tweetService = new MapDBTweetService(sentimentAnalyzer);
         JobService jobService = new JobService(tweetService);
         Importer importer = new Importer(tweetService);
         importer.importTweetsFrom(new File("test_set_tweets.txt"));

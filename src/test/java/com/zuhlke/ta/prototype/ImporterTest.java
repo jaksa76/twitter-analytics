@@ -14,6 +14,7 @@ public class ImporterTest {
             }
 
             public void importTweets(List<Tweet> tweets) {
+                tweets.forEach(System.out::println);
                 System.out.println("imported " + tweets.size() + " tweets.");
             }
         });

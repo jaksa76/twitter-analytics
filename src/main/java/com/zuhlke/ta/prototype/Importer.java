@@ -1,9 +1,12 @@
 package com.zuhlke.ta.prototype;
 
+import com.google.common.base.Strings;
+
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -25,13 +28,9 @@ public class Importer {
         String s = in.readLine();
         while (s != null && count < MAX_TWEETS_TO_IMPORT) {
             count++;
-            String[] parts = s.split("\t");
-            while (parts.length < 4) {
-                s += in.readLine();
-                parts = s.split("\t");
-            }
+            String[] parts = s.split("\\|");
 
-            bufferTweet(parts);
+            if (parts.length == 12) bufferTweet(parts);
 
             s = in.readLine();
         }
@@ -43,17 +42,21 @@ public class Importer {
     private void bufferTweet(String[] parts) {
         try {
             tweets.add(new Tweet(
-                    Long.parseLong(parts[1]),
-                    Long.parseLong(parts[0]),
+                    getId(parts[1]),
+                    parts[3],
                     parts[2],
-                    parseDate(parts[3])
+                    parseDate(parts[4])
                     ));
         } catch (ParseException e) {
             System.out.println(e.getMessage());
         } catch (NumberFormatException e) {
-            System.out.println("Could not parse number " + parts[0] + " " + parts[1]);
+            System.out.println("Could not parse number " + parts[1]);
         }
         if (tweets.size() == BATCH_SIZE) flushTweets();
+    }
+
+    private long getId(String part) {
+        return Strings.isNullOrEmpty(part) ? 0L : Long.parseLong(part);
     }
 
     private Date parseDate(String part) throws ParseException {

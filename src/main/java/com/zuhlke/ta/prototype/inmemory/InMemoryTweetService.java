@@ -33,7 +33,7 @@ public class InMemoryTweetService implements TweetService {
         int n = 0;
         long start = System.currentTimeMillis();
         for (Tweet t : tweets) {
-            if (t.message.contains(q.keyword)) {
+            if (t.message.toLowerCase().contains(q.keyword.toLowerCase())) {
                 Day day = result.getDays().computeIfAbsent(dateFormat.format(t.date), k -> new Day());
 
                 if (sentimentAnalyzer.getSentiment(t.message) > 0.0) day.goodTweets += 1;
