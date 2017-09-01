@@ -28,6 +28,16 @@ public class SentimentTimeline {
             this.goodTweets = goodTweets;
             this.badTweets = badTweets;
         }
+1
+        public static Day merge(Day left, Day right) {
+            left.goodTweets += right.goodTweets;
+            left.badTweets += right.badTweets;
+            return left;
+        }
+
+        public void addSentiment(float sentiment) {
+            if (sentiment > 0.0) goodTweets += 1; else badTweets += 1;
+        }
     }
 
     public String getQuery() {
@@ -45,4 +55,5 @@ public class SentimentTimeline {
                         .map(e -> e.getKey() + "\t" + e.getValue().goodTweets + "\t" + e.getValue().badTweets)
                         .collect(Collectors.joining("\n"));
     }
+
 }

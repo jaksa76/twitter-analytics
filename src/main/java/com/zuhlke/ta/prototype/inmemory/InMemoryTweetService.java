@@ -45,15 +45,11 @@ public class InMemoryTweetService implements TweetService {
     }
 
     private Collector<Tweet, Day, Day> toSentiment() {
-        return Collector.of(
-                Day::new,
-                (day, tweet) -> { if (sentimentAnalyzer.getSentiment(tweet.message) > 0.0) day.goodTweets += 1; else day.badTweets += 1; },
-                (day1, day2) -> {
-                    day1.goodTweets += day2.goodTweets;
-                    day1.badTweets += day2.badTweets;
-                    return day1;
-                },
-                Characteristics.UNORDERED);
+        return Collector.of(Day::new, this::interpretSentiment, Day::merge, Characteristics.UNORDERED);
+    }
+
+    private void interpretSentiment(Day day, Tweet tweet) {
+        day.addSentiment(sentimentAnalyzer.getSentiment(tweet.message));
     }
 
     static class Tracer {
@@ -63,7 +59,7 @@ public class InMemoryTweetService implements TweetService {
 
         Tracer(String keyword) { this.keyword = keyword; }
 
-        void increment(Tweet unused) {
+        void increment(@SuppressWarnings("unused") Tweet unused) {
             long n = count.incrementAndGet();
             if (n%1000 == 0) System.out.println("processed " + n + " tweets for " + keyword);
         }
