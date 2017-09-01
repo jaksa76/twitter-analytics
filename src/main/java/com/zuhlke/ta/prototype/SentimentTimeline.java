@@ -1,15 +1,20 @@
 package com.zuhlke.ta.prototype;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SentimentTimeline {
     private final String query;
-    private final Map<String, Day> days = new LinkedHashMap<>();
+    private final Map<String, Day> days;
 
     public SentimentTimeline(String query) {
+        this(query, new LinkedHashMap<>());
+    }
+
+    public SentimentTimeline(String query, Map<String, Day> days) {
         this.query = query;
+        this.days = days;
     }
 
     public static class Day {
@@ -22,14 +27,6 @@ public class SentimentTimeline {
         public Day(int goodTweets, int badTweets) {
             this.goodTweets = goodTweets;
             this.badTweets = badTweets;
-        }
-
-        public int getGoodTweets() {
-            return goodTweets;
-        }
-
-        public int getBadTweets() {
-            return badTweets;
         }
     }
 

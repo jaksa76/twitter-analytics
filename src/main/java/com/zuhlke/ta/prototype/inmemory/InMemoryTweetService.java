@@ -2,14 +2,17 @@ package com.zuhlke.ta.prototype.inmemory;
 
 import com.zuhlke.ta.prototype.*;
 import com.zuhlke.ta.prototype.SentimentTimeline.Day;
-import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collector;
+import java.util.stream.Collector.Characteristics;
+
+import static java.util.stream.Collectors.groupingBy;
 
 public class InMemoryTweetService implements TweetService {
     private final SimpleDateFormat dateFormat;
@@ -28,24 +31,45 @@ public class InMemoryTweetService implements TweetService {
 
     @Override
     public SentimentTimeline analyzeSentimetOverTime(Query q) {
-        SentimentTimeline result = new SentimentTimeline(q.keyword);
+        final String keyword = q.keyword.toLowerCase();
+        final Tracer tracer = new Tracer(q.keyword);
 
-        int n = 0;
-        long start = System.currentTimeMillis();
-        for (Tweet t : tweets) {
-            if (t.message.toLowerCase().contains(q.keyword.toLowerCase())) {
-                Day day = result.getDays().computeIfAbsent(dateFormat.format(t.date), k -> new Day());
+        final Map<String, Day> days = tweets.stream()
+                .filter(t -> t.message.toLowerCase().contains(keyword))
+                .peek(tracer::increment)
+                .collect(groupingBy(t -> dateFormat.format(t.date), LinkedHashMap::new, toSentiment()));
 
-                if (sentimentAnalyzer.getSentiment(t.message) > 0.0) day.goodTweets += 1;
-                else day.badTweets += 1;
-            }
+        tracer.summarise();
 
-            n++;
-            if (n%10000 == 0) System.out.println("processed " + n + " tweets for " + q.keyword);
+        return new SentimentTimeline(q.keyword, days);
+    }
+
+    private Collector<Tweet, Day, Day> toSentiment() {
+        return Collector.of(
+                Day::new,
+                (day, tweet) -> { if (sentimentAnalyzer.getSentiment(tweet.message) > 0.0) day.goodTweets += 1; else day.badTweets += 1; },
+                (day1, day2) -> {
+                    day1.goodTweets += day2.goodTweets;
+                    day1.badTweets += day2.badTweets;
+                    return day1;
+                },
+                Characteristics.UNORDERED);
+    }
+
+    static class Tracer {
+        final long start = System.currentTimeMillis();
+        final AtomicLong count = new AtomicLong();
+        final String keyword;
+
+        Tracer(String keyword) { this.keyword = keyword; }
+
+        void increment(Tweet unused) {
+            long n = count.incrementAndGet();
+            if (n%1000 == 0) System.out.println("processed " + n + " tweets for " + keyword);
         }
 
-        System.out.println("Processed " + (1000 * n / (System.currentTimeMillis() - start)) + " tweets/s");
-
-        return result;
+        void summarise() {
+            System.out.println("Processed " + (1000 * count.get() / (System.currentTimeMillis() - start)) + " tweets/s");
+        }
     }
 }

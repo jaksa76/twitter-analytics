@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 
 
 /**
@@ -57,11 +59,7 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
 	}
 
 	String[] getTokens(String sentence){
-		String[] words = tokenizer.tokenize(sentence);
-		StringBuilder builder =  new StringBuilder();
-		for(String word : words)
-			builder.append(word + " ");
-		return posTokenizer.tokenize(builder.toString());
+		return posTokenizer.tokenize(stream(tokenizer.tokenize(sentence)).collect(joining(" ")));
 	}
 
 	List<WeightedWord> getSentimentWords(String[] tokens){

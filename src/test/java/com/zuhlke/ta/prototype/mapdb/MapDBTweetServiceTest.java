@@ -3,16 +3,13 @@ package com.zuhlke.ta.prototype.mapdb;
 import com.zuhlke.ta.prototype.Importer;
 import com.zuhlke.ta.prototype.Query;
 import com.zuhlke.ta.prototype.SentimentTimeline;
-import com.zuhlke.ta.prototype.inmemory.InMemoryTweetService;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
 import org.junit.After;
 import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
-
-public class MapDBTweetServiceTest {
+public class    MapDBTweetServiceTest {
 
     private MapDBTweetService tweetService;
 
