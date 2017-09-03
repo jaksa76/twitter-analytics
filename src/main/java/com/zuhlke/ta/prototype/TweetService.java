@@ -1,8 +1,8 @@
 package com.zuhlke.ta.prototype;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 public interface TweetService {
     SentimentTimeline analyzeSentimetOverTime(Query q);
-    void importTweets(List<Tweet> tweets);
+    void importTweets(Stream<Tweet> tweets);
 }

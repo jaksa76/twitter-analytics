@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasToString;
@@ -32,7 +32,7 @@ public class InMemoryTweetServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     public void collectsSentimentFromTweets() {
-        service.importTweets(asList(
+        service.importTweets(Stream.of(
                 tweet("one keyword", 5, 15), tweet("two keyword", 5, 15),
                 tweet("three keyword", 6, 16), tweet("four keyword", 6, 16)));
         sentimentResults.put("one", 1.2f);

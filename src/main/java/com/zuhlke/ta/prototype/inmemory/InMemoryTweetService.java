@@ -11,8 +11,10 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 public class InMemoryTweetService implements TweetService {
     private final SentimentAnalyzer sentimentAnalyzer;
@@ -24,8 +26,8 @@ public class InMemoryTweetService implements TweetService {
     }
 
     @Override
-    public void importTweets(List<Tweet> tweets) {
-        this.tweets.addAll(tweets);
+    public void importTweets(Stream<Tweet> tweets) {
+        this.tweets.addAll(tweets.collect(toList()));
     }
 
     @Override
@@ -55,7 +57,7 @@ public class InMemoryTweetService implements TweetService {
         if (sentiment > 0.0) day.goodTweets += 1; else day.badTweets += 1;
     }
 
-    static class Tracer {
+    private static class Tracer {
         final long start = System.currentTimeMillis();
         final AtomicLong count = new AtomicLong();
         final String keyword;

@@ -7,26 +7,25 @@ import org.mapdb.HTreeMap;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.List;
+import java.util.stream.Stream;
 
 public class MapDBTweetService implements TweetService {
     private final SimpleDateFormat dateFormat;
     private final DB db;
-    private final HTreeMap tweets;
+    private final HTreeMap<Object, Tweet> tweets;
     private final SentimentAnalyzer sentimentAnalyzer;
 
+    @SuppressWarnings("unchecked")
     public MapDBTweetService(SentimentAnalyzer sentimentAnalyzer) {
         this.sentimentAnalyzer = sentimentAnalyzer;
         db = DBMaker.fileDB(new File("tweets.db")).make();
-        tweets = db.hashMap("tweets").createOrOpen();
+        tweets = (HTreeMap<Object, Tweet>) db.hashMap("tweets").createOrOpen();
         dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     }
 
     @Override
-    public void importTweets(List<Tweet> tweets) {
-        for (Tweet tweet : tweets) {
-            this.tweets.put(tweet.id, tweet);
-        }
+    public void importTweets(Stream<Tweet> tweetStream) {
+        tweetStream.forEach(t -> tweets.put(t.id, t));
     }
 
     @Override
@@ -36,7 +35,7 @@ public class MapDBTweetService implements TweetService {
         int n = 0;
         long start = System.currentTimeMillis();
         for (Object id : tweets.keySet()) {
-            Tweet t = (Tweet) tweets.get(id);
+            Tweet t = tweets.get(id);
             if (t.message.contains(q.keyword)) {
                 SentimentTimeline.Day day = result.getDays().computeIfAbsent(dateFormat.format(t.date), k -> new SentimentTimeline.Day());
 
