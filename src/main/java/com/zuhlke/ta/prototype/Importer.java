@@ -2,12 +2,14 @@ package com.zuhlke.ta.prototype;
 
 import com.google.common.base.Strings;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class Importer {
@@ -59,9 +61,9 @@ public class Importer {
         return Strings.isNullOrEmpty(part) ? 0L : Long.parseLong(part);
     }
 
-    private Date parseDate(String part) throws ParseException {
+    private LocalDate parseDate(String part) throws ParseException {
         if (part.length() < 10) throw new ParseException("Could not parse date " + part, 0);
-        return dateFormat.parse(part.substring(0, 10));
+        return LocalDate.parse(part.substring(0, 10));
     }
 
     private void flushTweets() {

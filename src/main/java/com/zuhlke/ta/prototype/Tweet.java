@@ -1,15 +1,15 @@
 package com.zuhlke.ta.prototype;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Tweet implements Serializable {
     public final long id;
     public final String userId;
     public final String message;
-    public final Date date;
+    public final LocalDate date;
 
-    public Tweet(long id, String userId, String message, Date date) {
+    public Tweet(long id, String userId, String message, LocalDate date) {
         this.id = id;
         this.userId = userId;
         this.message = message;

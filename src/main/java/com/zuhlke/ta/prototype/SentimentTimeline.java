@@ -2,7 +2,9 @@ package com.zuhlke.ta.prototype;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
 
 public class SentimentTimeline {
     private final String query;
@@ -28,15 +30,16 @@ public class SentimentTimeline {
             this.goodTweets = goodTweets;
             this.badTweets = badTweets;
         }
-1
+
         public static Day merge(Day left, Day right) {
             left.goodTweets += right.goodTweets;
             left.badTweets += right.badTweets;
             return left;
         }
 
-        public void addSentiment(float sentiment) {
-            if (sentiment > 0.0) goodTweets += 1; else badTweets += 1;
+        @Override
+        public String toString() {
+            return format("{goodTweets=%d, badTweets=%d}", goodTweets, badTweets);
         }
     }
 
@@ -52,8 +55,8 @@ public class SentimentTimeline {
     public String toString() {
         return query + "\n" +
                 days.entrySet().stream()
-                        .map(e -> e.getKey() + "\t" + e.getValue().goodTweets + "\t" + e.getValue().badTweets)
-                        .collect(Collectors.joining("\n"));
+                        .map(e -> format("%s\t%s", e.getKey(), e.getValue()))
+                        .collect(joining("\n"));
     }
 
 }

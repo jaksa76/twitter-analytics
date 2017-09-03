@@ -3,7 +3,7 @@ package com.zuhlke.ta.prototype.inmemory;
 import com.zuhlke.ta.prototype.*;
 import com.zuhlke.ta.prototype.SentimentTimeline.Day;
 
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,13 +15,12 @@ import java.util.stream.Collector.Characteristics;
 import static java.util.stream.Collectors.groupingBy;
 
 public class InMemoryTweetService implements TweetService {
-    private final SimpleDateFormat dateFormat;
     private final SentimentAnalyzer sentimentAnalyzer;
     private final List<Tweet> tweets = new ArrayList<>();
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_LOCAL_DATE;
 
     public InMemoryTweetService(SentimentAnalyzer sentimentAnalyzer) {
         this.sentimentAnalyzer = sentimentAnalyzer;
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     }
 
     @Override
@@ -37,7 +36,7 @@ public class InMemoryTweetService implements TweetService {
         final Map<String, Day> days = tweets.stream()
                 .filter(t -> t.message.toLowerCase().contains(keyword))
                 .peek(tracer::increment)
-                .collect(groupingBy(t -> dateFormat.format(t.date), LinkedHashMap::new, toSentiment()));
+                .collect(groupingBy(t -> t.date.format(dateFormat), LinkedHashMap::new, toSentiment()));
 
         tracer.summarise();
 
@@ -49,7 +48,11 @@ public class InMemoryTweetService implements TweetService {
     }
 
     private void interpretSentiment(Day day, Tweet tweet) {
-        day.addSentiment(sentimentAnalyzer.getSentiment(tweet.message));
+        addSentiment(day, sentimentAnalyzer.getSentiment(tweet.message));
+    }
+
+    private static void addSentiment(Day day, float sentiment) {
+        if (sentiment > 0.0) day.goodTweets += 1; else day.badTweets += 1;
     }
 
     static class Tracer {
