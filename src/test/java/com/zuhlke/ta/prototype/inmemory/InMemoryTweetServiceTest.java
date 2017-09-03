@@ -27,7 +27,7 @@ public class InMemoryTweetServiceTest {
             .findFirst()
             .map(Map.Entry::getValue)
             .orElseThrow(() -> new AssertionError("missing sentiment for " + text));
-    private final InMemoryTweetService service = new InMemoryTweetService(analyzer);
+    private final PersistentTweetService service = new PersistentTweetService(analyzer, new InMemoryTweetStore());
 
     @SuppressWarnings("unchecked")
     @Test

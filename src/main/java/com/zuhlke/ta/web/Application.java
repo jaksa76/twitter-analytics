@@ -2,7 +2,8 @@ package com.zuhlke.ta.web;
 
 import com.google.common.base.Strings;
 import com.zuhlke.ta.prototype.*;
-import com.zuhlke.ta.prototype.inmemory.InMemoryTweetService;
+import com.zuhlke.ta.prototype.inmemory.InMemoryTweetStore;
+import com.zuhlke.ta.prototype.inmemory.PersistentTweetService;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
 import org.jetbrains.annotations.NotNull;
 import spark.ModelAndView;
@@ -21,7 +22,7 @@ import static spark.Spark.post;
 public class Application {
     public static void main(String[] args) throws IOException {
         SentimentAnalyzer sentimentAnalyzer = new TwitterSentimentAnalyzerImpl();
-        TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
+        TweetService tweetService = new PersistentTweetService(sentimentAnalyzer, new InMemoryTweetStore());
 //        TweetService tweetService = new MapDBTweetService(sentimentAnalyzer);
         JobService jobService = new JobService(tweetService);
         Importer importer = new Importer(tweetService);

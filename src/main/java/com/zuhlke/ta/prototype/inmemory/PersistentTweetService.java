@@ -4,9 +4,7 @@ import com.zuhlke.ta.prototype.*;
 import com.zuhlke.ta.prototype.SentimentTimeline.Day;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collector;
@@ -14,20 +12,20 @@ import java.util.stream.Collector.Characteristics;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
 
-public class InMemoryTweetService implements TweetService {
+public class PersistentTweetService implements TweetService {
+    private final TweetStore store;
     private final SentimentAnalyzer sentimentAnalyzer;
-    private final List<Tweet> tweets = new ArrayList<>();
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_LOCAL_DATE;
 
-    public InMemoryTweetService(SentimentAnalyzer sentimentAnalyzer) {
+    public PersistentTweetService(SentimentAnalyzer sentimentAnalyzer, TweetStore tweetStore) {
         this.sentimentAnalyzer = sentimentAnalyzer;
+        this.store = tweetStore;
     }
 
     @Override
     public void importTweets(Stream<Tweet> tweets) {
-        this.tweets.addAll(tweets.collect(toList()));
+        store.importTweets(tweets);
     }
 
     @Override
@@ -35,7 +33,7 @@ public class InMemoryTweetService implements TweetService {
         final String keyword = q.keyword.toLowerCase();
         final Tracer tracer = new Tracer(q.keyword);
 
-        final Map<String, Day> days = tweets.stream()
+        final Map<String, Day> days = store.tweets()
                 .filter(t -> t.message.toLowerCase().contains(keyword))
                 .peek(tracer::increment)
                 .collect(groupingBy(t -> t.date.format(dateFormat), LinkedHashMap::new, toSentiment()));
@@ -73,4 +71,5 @@ public class InMemoryTweetService implements TweetService {
             System.out.println("Processed " + (1000 * count.get() / (System.currentTimeMillis() - start)) + " tweets/s");
         }
     }
+
 }
