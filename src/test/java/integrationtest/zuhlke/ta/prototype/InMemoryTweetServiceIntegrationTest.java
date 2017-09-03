@@ -4,7 +4,7 @@ import com.zuhlke.ta.prototype.Importer;
 import com.zuhlke.ta.prototype.Query;
 import com.zuhlke.ta.prototype.SentimentTimeline;
 import com.zuhlke.ta.prototype.inmemory.InMemoryTweetStore;
-import com.zuhlke.ta.prototype.inmemory.PersistentTweetService;
+import com.zuhlke.ta.prototype.PersistentTweetService;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
 import org.junit.Test;
 

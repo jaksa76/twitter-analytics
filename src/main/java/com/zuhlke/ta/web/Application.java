@@ -3,7 +3,7 @@ package com.zuhlke.ta.web;
 import com.google.common.base.Strings;
 import com.zuhlke.ta.prototype.*;
 import com.zuhlke.ta.prototype.inmemory.InMemoryTweetStore;
-import com.zuhlke.ta.prototype.inmemory.PersistentTweetService;
+import com.zuhlke.ta.prototype.PersistentTweetService;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
 import org.jetbrains.annotations.NotNull;
 import spark.ModelAndView;

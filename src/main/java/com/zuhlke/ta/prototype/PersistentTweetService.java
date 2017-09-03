@@ -1,6 +1,5 @@
-package com.zuhlke.ta.prototype.inmemory;
+package com.zuhlke.ta.prototype;
 
-import com.zuhlke.ta.prototype.*;
 import com.zuhlke.ta.prototype.SentimentTimeline.Day;
 
 import java.time.format.DateTimeFormatter;

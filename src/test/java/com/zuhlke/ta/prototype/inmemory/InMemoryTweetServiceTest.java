@@ -1,9 +1,6 @@
 package com.zuhlke.ta.prototype.inmemory;
 
-import com.zuhlke.ta.prototype.Query;
-import com.zuhlke.ta.prototype.SentimentAnalyzer;
-import com.zuhlke.ta.prototype.SentimentTimeline;
-import com.zuhlke.ta.prototype.Tweet;
+import com.zuhlke.ta.prototype.*;
 import org.junit.Test;
 
 import java.time.LocalDate;
