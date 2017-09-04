@@ -20,7 +20,7 @@ public class SentimentTimeline {
     }
 
     public static class Day {
-        public int goodTweets = 0, badTweets = 0;
+        private int goodTweets = 0, badTweets = 0;
 
         public Day() {
             this(0, 0);
@@ -36,6 +36,14 @@ public class SentimentTimeline {
             left.badTweets += right.badTweets;
             return left;
         }
+
+        public int getGoodTweets() { return goodTweets; }
+
+        public int getBadTweets() { return badTweets; }
+
+        public void incrementGood() { goodTweets++; }
+
+        public void incrementBad() { badTweets++; }
 
         @Override
         public String toString() {

@@ -51,7 +51,7 @@ public class PersistentTweetService implements TweetService {
     }
 
     private static void addSentiment(Day day, float sentiment) {
-        if (sentiment > 0.0) day.goodTweets += 1; else day.badTweets += 1;
+        if (sentiment > 0.0) day.incrementGood(); else day.incrementBad();
     }
 
     private static class Tracer {
@@ -67,7 +67,12 @@ public class PersistentTweetService implements TweetService {
         }
 
         void summarise() {
-            System.out.println("Processed " + (1000 * count.get() / (System.currentTimeMillis() - start)) + " tweets/s");
+            if (count.get() == 0) {
+                System.out.println("Processed " + 0 + " tweets/s");
+            } else {
+                System.out.println("Processed " + (1000 * count.get() / (System.currentTimeMillis() - start)) + " tweets/s");
+            }
+
         }
     }
 
