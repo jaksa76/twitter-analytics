@@ -5,6 +5,7 @@ import com.zuhlke.ta.prototype.*;
 import com.zuhlke.ta.prototype.inmemory.InMemoryTweetStore;
 import com.zuhlke.ta.prototype.PersistentTweetService;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
+import com.zuhlke.ta.twitterclient.TwitterClientRunner;
 import org.jetbrains.annotations.NotNull;
 import spark.ModelAndView;
 import spark.Request;
@@ -22,7 +23,8 @@ import static spark.Spark.post;
 public class Application {
     public static void main(String[] args) throws IOException {
         SentimentAnalyzer sentimentAnalyzer = new TwitterSentimentAnalyzerImpl();
-        TweetService tweetService = new PersistentTweetService(sentimentAnalyzer, new InMemoryTweetStore());
+        TweetStore tweetStore = new InMemoryTweetStore();
+        TweetService tweetService = new PersistentTweetService(sentimentAnalyzer, tweetStore);
 //        TweetService tweetService = new MapDBTweetService(sentimentAnalyzer);
         JobService jobService = new JobService(tweetService);
         Importer importer = new Importer(tweetService);
@@ -35,6 +37,8 @@ public class Application {
         get("/results/", (req, resp) -> jobService.getResults());
         get("/pending/", (req, resp) -> jobService.getPending());
         post("/jobs/", (req, resp) -> enqueueJob(jobService, req, resp));
+
+        TwitterClientRunner.runClient(tweetStore);
     }
 
     @NotNull
