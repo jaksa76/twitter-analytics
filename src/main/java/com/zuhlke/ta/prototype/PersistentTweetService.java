@@ -24,7 +24,7 @@ public class PersistentTweetService implements TweetService {
 
     @Override
     public void importTweets(Stream<Tweet> tweets) {
-        store.importTweets(tweets);
+        tweets.forEach(store::addTweet);
     }
 
     @Override

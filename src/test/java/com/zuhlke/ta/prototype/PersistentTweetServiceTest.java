@@ -1,6 +1,6 @@
-package com.zuhlke.ta.prototype.inmemory;
+package com.zuhlke.ta.prototype;
 
-import com.zuhlke.ta.prototype.*;
+import com.zuhlke.ta.prototype.inmemory.InMemoryTweetStore;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.hasToString;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-public class InMemoryTweetServiceTest {
+public class PersistentTweetServiceTest {
     private final Random random = new Random();
     private final Map<String, Float> sentimentResults = new HashMap<>();
     private final SentimentAnalyzer analyzer = text ->

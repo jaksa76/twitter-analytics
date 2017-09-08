@@ -16,8 +16,8 @@ public class ImporterTest {
 
             public void importTweets(Stream<Tweet> tweets) {
                 final AtomicLong count = new AtomicLong();
-                tweets.peek(t -> count.incrementAndGet() )
-                       .forEach(System.out::println);
+                tweets.peek(t -> count.incrementAndGet() ).forEach(System.out::println);
+                
                 System.out.println("imported " + count.longValue() + " tweets.");
             }
         });

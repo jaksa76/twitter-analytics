@@ -5,9 +5,6 @@ import twitter4j.conf.ConfigurationContext;
 
 import java.io.Closeable;
 
-/**
- * Created by eabi on 04/09/2017.
- */
 public class TwitterClient implements Closeable {
     private final StatusListener listener;
     private final LocationBounds locationBounds;

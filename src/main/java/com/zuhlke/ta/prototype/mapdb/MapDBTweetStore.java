@@ -23,8 +23,8 @@ public class MapDBTweetStore implements TweetStore, Closeable {
     }
 
     @Override
-    public void importTweets(Stream<Tweet> tweetStream) {
-        tweetStream.forEach(t -> tweets.put(t.id, t));
+    public void addTweet(Tweet tweet) {
+        tweets.put(tweet.id, tweet);
     }
 
     @SuppressWarnings("unchecked")
