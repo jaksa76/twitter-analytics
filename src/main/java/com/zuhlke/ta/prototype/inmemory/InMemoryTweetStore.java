@@ -3,22 +3,26 @@ package com.zuhlke.ta.prototype.inmemory;
 import com.zuhlke.ta.prototype.Tweet;
 import com.zuhlke.ta.prototype.TweetStore;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
-
 public class InMemoryTweetStore implements TweetStore {
-    private final List<Tweet> tweets = new ArrayList<>();
+    private final LinkedBlockingQueue<Tweet> tweets = new LinkedBlockingQueue<>();
+
 
     @Override
-    public void importTweets(Stream<Tweet> tweets) {
-        this.tweets.addAll(tweets.collect(toList()));
+    public void addTweet(Tweet tweet) {
+        tweets.add(tweet);
     }
 
     @Override
     public Stream<Tweet> tweets() {
         return tweets.stream();
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    public Tweet poll(int timeoutSeconds) throws InterruptedException {
+        return tweets.poll(timeoutSeconds, TimeUnit.SECONDS);
     }
 }
