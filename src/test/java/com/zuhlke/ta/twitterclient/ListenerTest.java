@@ -1,38 +1,33 @@
 package com.zuhlke.ta.twitterclient;
 
-import org.jetbrains.annotations.NotNull;
+import com.zuhlke.ta.prototype.Tweet;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import twitter4j.*;
-import static org.mockito.Mockito.*;
+import twitter4j.Status;
+import twitter4j.User;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-/**
- * Created by eabi on 04/09/2017.
- */
-public class ListenerTest {
-    @Test
-    public void shouldSendTweetToSinkWhenNewStatusReceived() {
+import static org.mockito.Mockito.*;
 
+public class ListenerTest {
+    private static final long TWEET_ID = 5;
+    private static final String TWITTER_USER = "jack";
+    private final TweetSink sink = mock(TweetSink.class);
+    private final Listener target = new Listener(sink);
+
+    @Test
+    public void sends_tweet_to_sink_when_new_status_received() {
         Instant instant = Instant.now();
 
-        long expectedId = 5;
-        String expectedUser = "jack";
-        String expectedMessage = "Hello, World!";
+        String tweetMessage = "Hello, World!";
         LocalDate expectedDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
 
-        TweetSink sink = mock(TweetSink.class);
+        target.onStatus(createTestStatus(TWEET_ID, TWITTER_USER, tweetMessage, Date.from(instant)));
 
-        Listener target = new Listener(sink);
-
-        target.onStatus(createTestStatus(expectedId, expectedUser, expectedMessage, Date.from(instant)));
-
-        verify(sink).addTweet(
-                argThat(t -> t.id == expectedId && t.message.equals(expectedMessage) && t.userId.equals(expectedUser) && t.date.equals(expectedDate)));
+        verify(sink).addTweet(refEq(new Tweet(TWEET_ID, TWITTER_USER, tweetMessage, expectedDate)));
     }
 
     private Status createTestStatus(long id, String userScreenName, String text, Date createdAt) {
