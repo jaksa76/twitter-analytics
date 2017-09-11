@@ -37,7 +37,7 @@ public class PersistentTweetServiceTest {
         sentimentResults.put("three", -2.3f);
         sentimentResults.put("four", 0.0f);
 
-        final SentimentTimeline timeline = service.analyzeSentimetOverTime(new Query("Keyword"));
+        final SentimentTimeline timeline = service.analyzeSentimentOverTime(new Query("Keyword"));
 
         assertThat(timeline.getQuery(), equalTo("Keyword"));
         assertThat(timeline.getDays(),

@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -28,12 +29,12 @@ public class MapDBTweetServiceTest {
             final PersistentTweetService tweetService = tweetService(tweetStore);
 
             new Importer(tweetService).importTweetsFrom(new File("minimal_set_tweets.txt"));
-            System.out.println(tweetService.analyzeSentimetOverTime(new Query("")));
+            System.out.println(tweetService.analyzeSentimentOverTime(new Query("")));
         }
     }
 
     @NotNull
-    private static PersistentTweetService tweetService(MapDBTweetStore tweetStore) {
+    private static PersistentTweetService tweetService(MapDBTweetStore tweetStore) throws IOException, URISyntaxException {
         return new PersistentTweetService(
                         new TwitterSentimentAnalyzerImpl(),
                         tweetStore);

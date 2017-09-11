@@ -16,9 +16,7 @@ public class TwitterClientRunner {
                 Double.parseDouble(props.getProperty("boundsLatitudeMax")),
                 Double.parseDouble(props.getProperty("boundsLongitudeMax")));
 
-        final TwitterClient client = new TwitterClient(
-                new Listener(tweetStore),
-                bounds);
+        final TwitterClient client = new TwitterClient(new Listener(tweetStore), bounds);
 
         client.run();
 

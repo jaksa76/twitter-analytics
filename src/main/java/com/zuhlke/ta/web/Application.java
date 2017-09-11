@@ -14,6 +14,7 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ import static spark.Spark.get;
 import static spark.Spark.post;
 
 public class Application {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, URISyntaxException {
         SentimentAnalyzer sentimentAnalyzer = new TwitterSentimentAnalyzerImpl();
         TweetStore tweetStore = new InMemoryTweetStore();
         TweetService tweetService = new PersistentTweetService(sentimentAnalyzer, tweetStore);
