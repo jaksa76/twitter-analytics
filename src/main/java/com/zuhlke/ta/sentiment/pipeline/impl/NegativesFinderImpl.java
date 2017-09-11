@@ -5,7 +5,7 @@ import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.NegativesFinder;
 import com.zuhlke.ta.sentiment.utils.Dictionary;
 import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
-import com.zuhlke.ta.sentiment.utils.SingleFileDictionary;
+import com.zuhlke.ta.sentiment.utils.MappingFileDictionary;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +21,7 @@ public class NegativesFinderImpl implements NegativesFinder {
 	private final Dictionary negationWords;
 
 	public NegativesFinderImpl() throws IOException {
-		negationWords = SingleFileDictionary.fromFile(DictionaryConstans.NEGATORS_FILE);
+		negationWords = MappingFileDictionary.fromSingleFile(DictionaryConstans.NEGATORS_FILE);
 	}
 
 	public List<WeightedWord> find(List<WeightedWord> words) {

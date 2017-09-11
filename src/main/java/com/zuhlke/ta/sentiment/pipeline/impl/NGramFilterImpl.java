@@ -2,10 +2,7 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 
 import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.NGramFilter;
-import com.zuhlke.ta.sentiment.utils.Dictionary;
-import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
-import com.zuhlke.ta.sentiment.utils.NGramFileDictionary;
-import com.zuhlke.ta.sentiment.utils.TokenNotFound;
+import com.zuhlke.ta.sentiment.utils.*;
 import edu.mit.jwi.item.POS;
 import edu.mit.jwi.morph.SimpleStemmer;
 
@@ -34,11 +31,11 @@ public class NGramFilterImpl implements NGramFilter {
 		super();
 		this.maxL = maxNgram;
 		
-		this.nounsDictionary = NGramFileDictionary.fromFile(DictionaryConstans.NOUNS_NGRAM_FILE);
-		this.adjDictionary = NGramFileDictionary.fromFile(DictionaryConstans.ADJECTIVES_NGRAM_FILE);
-		this.advDictionary = NGramFileDictionary.fromFile(DictionaryConstans.ADVERBS_NGRAM_FILE);
-		this.verbDictionary = NGramFileDictionary.fromFile(DictionaryConstans.VERBS_NGRAM_FILE);
-		this.intDictionary = NGramFileDictionary.fromFile(DictionaryConstans.INTENSIFIERS_NGRAM_FILE);
+		this.nounsDictionary = MappingFileDictionary.fromNgramsFile(DictionaryConstans.NOUNS_NGRAM_FILE);
+		this.adjDictionary = MappingFileDictionary.fromNgramsFile(DictionaryConstans.ADJECTIVES_NGRAM_FILE);
+		this.advDictionary = MappingFileDictionary.fromNgramsFile(DictionaryConstans.ADVERBS_NGRAM_FILE);
+		this.verbDictionary = MappingFileDictionary.fromNgramsFile(DictionaryConstans.VERBS_NGRAM_FILE);
+		this.intDictionary = MappingFileDictionary.fromNgramsFile(DictionaryConstans.INTENSIFIERS_NGRAM_FILE);
 		
 		//dict = new edu.mit.jwi.Dictionary(SentimentWordFinderImpl.class.getClassLoader().getResource("wordnet"));
 		//dict.open();

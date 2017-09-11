@@ -2,10 +2,7 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 
 import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.SentimentWordFinder;
-import com.zuhlke.ta.sentiment.utils.Dictionary;
-import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
-import com.zuhlke.ta.sentiment.utils.SingleFileDictionary;
-import com.zuhlke.ta.sentiment.utils.TokenNotFound;
+import com.zuhlke.ta.sentiment.utils.*;
 import edu.mit.jwi.item.POS;
 import edu.mit.jwi.morph.SimpleStemmer;
 
@@ -26,10 +23,10 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 	private final SimpleStemmer stemmer;
 	
 	public SentimentWordFinderImpl() throws IOException, URISyntaxException {
-		this.nounsDictionary = SingleFileDictionary.fromFile(DictionaryConstans.NOUNS_FILE);
-		this.adjDictionary = SingleFileDictionary.fromFile(DictionaryConstans.ADJECTIVES_FILE);
-		this.advDictionary = SingleFileDictionary.fromFile(DictionaryConstans.ADVERBS_FILE);
-		this.verbDictionary = SingleFileDictionary.fromFile(DictionaryConstans.VERBS_FILE);
+		this.nounsDictionary = MappingFileDictionary.fromSingleFile(DictionaryConstans.NOUNS_FILE);
+		this.adjDictionary = MappingFileDictionary.fromSingleFile(DictionaryConstans.ADJECTIVES_FILE);
+		this.advDictionary = MappingFileDictionary.fromSingleFile(DictionaryConstans.ADVERBS_FILE);
+		this.verbDictionary = MappingFileDictionary.fromSingleFile(DictionaryConstans.VERBS_FILE);
 
         //URL dir_url = ClassLoader.getSystemResource("wordnet");
         //File file = new File(dir_url.toURI());

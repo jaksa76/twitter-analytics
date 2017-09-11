@@ -13,16 +13,16 @@ import java.util.List;
  */
 public class MultipleFileDictionary implements Dictionary {
 	
-	private final List<SingleFileDictionary> dictionaries = new ArrayList<SingleFileDictionary>();
+	private final List<Dictionary> dictionaries = new ArrayList<>();
 
 	public MultipleFileDictionary(String ... dictNames) throws IOException {
 		for(String dictName: dictNames) {
-			dictionaries.add(SingleFileDictionary.fromFile(dictName));
+			dictionaries.add(MappingFileDictionary.fromSingleFile(dictName));
 		}
 	}
 
 	public float getWordWeight(String word) throws TokenNotFound {
-		for(SingleFileDictionary dict: dictionaries) {
+		for(Dictionary dict: dictionaries) {
 			try {
 				Float wordWeight = dict.getWordWeight(word);
 				return wordWeight;
@@ -35,14 +35,14 @@ public class MultipleFileDictionary implements Dictionary {
 
 	public int getWordCount() {
 		int size = 0;
-		for(SingleFileDictionary dict: dictionaries) {
+		for(Dictionary dict: dictionaries) {
 			size += dict.getWordCount();
 		}
 		return size;
 	}
 
 	public boolean contains(String word) {
-		for(SingleFileDictionary dict: dictionaries) {
+		for(Dictionary dict: dictionaries) {
 			if (dict.contains(word)) {
 				return true;
 			}
