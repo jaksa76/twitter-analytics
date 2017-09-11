@@ -50,21 +50,20 @@ public class NGramFilterImpl implements NGramFilter {
 	@Override
 	public List<WeightedWord> filterNgrams(List<WeightedWord> words) {
 		
-		List<WeightedWord> last    = new ArrayList<WeightedWord>();
-		List<WeightedWord> current = new ArrayList<WeightedWord>();
+		List<WeightedWord> last    = new ArrayList<>();
+		List<WeightedWord> current = new ArrayList<>();
 		
 		// Copy original list as previous
-		for(WeightedWord word : words)
-			last.add(word);
+		last.addAll(words);
 		
 		for(int cNgram = 2; cNgram <= maxL; cNgram++){ // At least bigrams
-			current = new ArrayList<WeightedWord>();
+			current = new ArrayList<>();
 			int currPos=0;
 			while(currPos < last.size()){
 				// Try to generate n-grams out of the current words
 				int length = 0;
 				int pp = 0;
-				List<WeightedWord> nGramTok = new ArrayList<WeightedWord>(cNgram);
+				List<WeightedWord> nGramTok = new ArrayList<>(cNgram);
 				while(length < cNgram && currPos+pp < last.size()){
 					WeightedWord word = last.get(currPos+pp);
 					length += word.getLength();
@@ -94,8 +93,7 @@ public class NGramFilterImpl implements NGramFilter {
 			
 			// Clear last
 			last.clear();
-			for(WeightedWord word : current)
-				last.add(word);
+			last.addAll(current);
 		}
 			
 		return current;
@@ -103,7 +101,7 @@ public class NGramFilterImpl implements NGramFilter {
 	
 	private WeightedWord findNgram(String ngram, int length){
 		WeightedWord out = null;
-		float weight = 0.0f;
+		float weight;
 		
 		try {
 			weight = nounsDictionary.getWordWeight(ngram);
@@ -147,7 +145,7 @@ public class NGramFilterImpl implements NGramFilter {
 	}
 	
 	private String lemmatize(String word){
-		POS partofSpeech = null;
+		POS partofSpeech;
 		
 		if(isVerb(word)){
 			partofSpeech = POS.VERB;
@@ -163,7 +161,7 @@ public class NGramFilterImpl implements NGramFilter {
 
         word = stripWord(word);
         if(!word.isEmpty()){
-	        List<String> stems = new ArrayList<String>();
+	        List<String> stems = new ArrayList<>();
 	        stems.addAll(stemmer.findStems(word, partofSpeech));
 	        stems.add(word);
 	
