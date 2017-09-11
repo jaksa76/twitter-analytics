@@ -6,12 +6,12 @@ import com.zuhlke.ta.sentiment.utils.Dictionary;
 import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
 import com.zuhlke.ta.sentiment.utils.SingleFileDictionary;
 
+import java.io.IOException;
+import java.util.List;
+
 import static com.zuhlke.ta.sentiment.utils.POSUtils.isModal;
 import static com.zuhlke.ta.sentiment.utils.POSUtils.stripWord;
 import static java.lang.Math.max;
-
-import java.io.IOException;
-import java.util.List;
 
 
 
@@ -20,7 +20,7 @@ public class IrrealisFinderImpl implements IrrealisFinder {
 	private final Dictionary irrealisWords;
 
 	public IrrealisFinderImpl() throws IOException {
-		irrealisWords = new SingleFileDictionary(DictionaryConstans.IRREALIS_FILE);
+		irrealisWords = SingleFileDictionary.fromFile(DictionaryConstans.IRREALIS_FILE);
 	}
 
 	public List<WeightedWord> find(List<WeightedWord> words) {

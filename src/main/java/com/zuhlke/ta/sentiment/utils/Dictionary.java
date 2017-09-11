@@ -9,7 +9,10 @@ package com.zuhlke.ta.sentiment.utils;
  *
  */
 public interface Dictionary {
+    float NO_SCORE = 0f;
+
     float getWordWeight(String word) throws TokenNotFound;
     int getWordCount();
     boolean contains(String word);
+
 }

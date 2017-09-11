@@ -34,11 +34,11 @@ public class NGramFilterImpl implements NGramFilter {
 		super();
 		this.maxL = maxNgram;
 		
-		this.nounsDictionary = new NGramFileDictionary(DictionaryConstans.NOUNS_NGRAM_FILE);
-		this.adjDictionary = new NGramFileDictionary(DictionaryConstans.ADJECTIVES_NGRAM_FILE);
-		this.advDictionary = new NGramFileDictionary(DictionaryConstans.ADVERBS_NGRAM_FILE);
-		this.verbDictionary = new NGramFileDictionary(DictionaryConstans.VERBS_NGRAM_FILE);
-		this.intDictionary = new NGramFileDictionary(DictionaryConstans.INTENSIFIERS_NGRAM_FILE);
+		this.nounsDictionary = NGramFileDictionary.fromFile(DictionaryConstans.NOUNS_NGRAM_FILE);
+		this.adjDictionary = NGramFileDictionary.fromFile(DictionaryConstans.ADJECTIVES_NGRAM_FILE);
+		this.advDictionary = NGramFileDictionary.fromFile(DictionaryConstans.ADVERBS_NGRAM_FILE);
+		this.verbDictionary = NGramFileDictionary.fromFile(DictionaryConstans.VERBS_NGRAM_FILE);
+		this.intDictionary = NGramFileDictionary.fromFile(DictionaryConstans.INTENSIFIERS_NGRAM_FILE);
 		
 		//dict = new edu.mit.jwi.Dictionary(SentimentWordFinderImpl.class.getClassLoader().getResource("wordnet"));
 		//dict.open();
