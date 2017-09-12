@@ -1,8 +1,10 @@
-package com.zuhlke.ta.prototype;
+package com.zuhlke.ta.prototype.solutions.common;
 
+import com.zuhlke.ta.prototype.*;
 import com.zuhlke.ta.prototype.SentimentTimeline.Day;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,8 +25,8 @@ public class PersistentTweetService implements TweetService {
     }
 
     @Override
-    public void importTweets(Stream<Tweet> tweets) {
-        store.importTweets(tweets);
+    public void importTweets(Collection<Tweet> tweets) {
+        store.importTweets(tweets.stream());
     }
 
     @Override
@@ -33,8 +35,8 @@ public class PersistentTweetService implements TweetService {
         final Tracer tracer = new Tracer(q.keyword);
 
         final Map<String, Day> days = store.tweets()
-                .filter(t -> t.message.toLowerCase().contains(keyword))
                 .peek(tracer::increment)
+                .filter(t -> t.message.toLowerCase().contains(keyword))
                 .collect(groupingBy(t -> t.date.format(dateFormat), LinkedHashMap::new, toSentiment()));
 
         tracer.summarise();

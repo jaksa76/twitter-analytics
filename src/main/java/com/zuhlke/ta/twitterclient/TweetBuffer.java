@@ -1,7 +1,7 @@
 package com.zuhlke.ta.twitterclient;
 
 import com.zuhlke.ta.prototype.Tweet;
-import com.zuhlke.ta.prototype.TweetStore;
+import com.zuhlke.ta.prototype.TweetService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,12 +9,12 @@ import java.util.List;
 /**
  * Created by eabi on 04/09/2017.
  */
-public class TweetStoreBuffer implements TweetSink {
-    private final TweetStore tweetStore;
+public class TweetBuffer implements TweetSink {
+    private final TweetService tweetStore;
     private final int bufferSize;
     private final List<Tweet> buffer = new ArrayList<>();
 
-    public TweetStoreBuffer(TweetStore tweetStore, int bufferSize) {
+    public TweetBuffer(TweetService tweetStore, int bufferSize) {
         this.tweetStore = tweetStore;
         this.bufferSize = bufferSize;
     }
@@ -25,7 +25,7 @@ public class TweetStoreBuffer implements TweetSink {
 
         if (buffer.size() >= bufferSize) {
             System.out.println("Sending tweets...");
-            tweetStore.importTweets(buffer.stream());
+            tweetStore.importTweets(buffer);
             buffer.clear();
         }
     }

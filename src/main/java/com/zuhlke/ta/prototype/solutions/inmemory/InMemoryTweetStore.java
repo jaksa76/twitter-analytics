@@ -1,7 +1,7 @@
-package com.zuhlke.ta.prototype.inmemory;
+package com.zuhlke.ta.prototype.solutions.inmemory;
 
 import com.zuhlke.ta.prototype.Tweet;
-import com.zuhlke.ta.prototype.TweetStore;
+import com.zuhlke.ta.prototype.solutions.common.TweetStore;
 
 import java.util.ArrayList;
 import java.util.List;

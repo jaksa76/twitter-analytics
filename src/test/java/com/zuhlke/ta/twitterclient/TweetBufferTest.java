@@ -1,60 +1,60 @@
 package com.zuhlke.ta.twitterclient;
 
 import com.zuhlke.ta.prototype.Tweet;
-import com.zuhlke.ta.prototype.TweetStore;
+import com.zuhlke.ta.prototype.TweetService;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.util.stream.Stream;
+import java.util.Collection;
 
 import static org.mockito.Mockito.*;
 
 /**
  * Created by eabi on 04/09/2017.
  */
-public class TweetStoreBufferTest {
+public class TweetBufferTest {
     @Test
-    public void shouldOnlySendTweetsToStoreOnceBufferIsFull() {
-        TweetStore store = mock(TweetStore.class);
+    public void shouldOnlySendTweetsToServiceOnceBufferIsFull() {
+        TweetService service = mock(TweetService.class);
         int bufferSize = 5;
 
-        TweetStoreBuffer target = new TweetStoreBuffer(store, bufferSize);
+        TweetBuffer target = new TweetBuffer(service, bufferSize);
 
         for (int count = 1; count < bufferSize; count++) {
             target.addTweet(createTestTweet());
         }
 
-        verify(store, never()).importTweets(any());
+        verify(service, never()).importTweets(any());
 
-        StreamCountCapture capture = prepareToCaptureSentTweetsCount(store);
+        StreamCountCapture capture = prepareToCaptureSentTweetsCount(service);
 
         target.addTweet(createTestTweet());
 
-        verify(store, times(1)).importTweets(any());
+        verify(service, times(1)).importTweets(any());
         assertEquals(bufferSize, capture.getCount());
     }
 
     @Test
     public void shouldEmptyTheBufferAfterSendingTweets() {
-        TweetStore store = mock(TweetStore.class);
+        TweetService service = mock(TweetService.class);
         int bufferSize = 5;
 
-        TweetStoreBuffer target = new TweetStoreBuffer(store, bufferSize);
+        TweetBuffer target = new TweetBuffer(service, bufferSize);
 
         for (int count = 1; count < 2 * bufferSize; count++) {
             target.addTweet(createTestTweet());
         }
 
         // Sanity check - should be just before the point the 2nd batch gets sent, so should have already been called just once
-        verify(store, times(1)).importTweets(any());
-        reset(store);
+        verify(service, times(1)).importTweets(any());
+        reset(service);
 
-        StreamCountCapture capture = prepareToCaptureSentTweetsCount(store);
+        StreamCountCapture capture = prepareToCaptureSentTweetsCount(service);
 
         target.addTweet(createTestTweet());
 
-        verify(store, times(1)).importTweets(any());
+        verify(service, times(1)).importTweets(any());
         assertEquals(bufferSize, capture.getCount());
     }
 
@@ -62,14 +62,14 @@ public class TweetStoreBufferTest {
         return new Tweet(0, "", "", LocalDate.of(2017, 9, 4));
     }
 
-    private StreamCountCapture prepareToCaptureSentTweetsCount(TweetStore store) {
+    private StreamCountCapture prepareToCaptureSentTweetsCount(TweetService service) {
         StreamCountCapture capture = new StreamCountCapture();
 
         doAnswer(invocationOnMock -> {
-            Stream<Tweet> tweets = (Stream<Tweet>)invocationOnMock.getArguments()[0];
-            capture.setCount(tweets.count());
+            Collection<Tweet> tweets = (Collection<Tweet>)invocationOnMock.getArguments()[0];
+            capture.setCount(tweets.size());
             return null;
-        }).when(store).importTweets(any());
+        }).when(service).importTweets(any());
 
         return capture;
     }

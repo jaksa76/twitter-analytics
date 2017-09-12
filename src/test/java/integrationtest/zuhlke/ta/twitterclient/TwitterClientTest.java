@@ -1,16 +1,16 @@
 package integrationtest.zuhlke.ta.twitterclient;
 
+import com.zuhlke.ta.prototype.Query;
+import com.zuhlke.ta.prototype.SentimentTimeline;
 import com.zuhlke.ta.prototype.Tweet;
-import com.zuhlke.ta.prototype.TweetStore;
-import com.zuhlke.ta.prototype.inmemory.InMemoryTweetStore;
+import com.zuhlke.ta.prototype.TweetService;
 import com.zuhlke.ta.twitterclient.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import twitter4j.StatusListener;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
@@ -19,15 +19,19 @@ import java.util.stream.Collectors;
 public class TwitterClientTest {
     @Test
     public void shouldCollectTweets() throws InterruptedException {
-        InMemoryTweetStore tweetStore = new InMemoryTweetStore();
+        final List<Tweet> collectedTweets = new ArrayList<>();
+        TweetService service = new TweetService() {
+            @Override public SentimentTimeline analyzeSentimetOverTime(Query q) { return null; }
+            @Override public void importTweets(Collection<Tweet> tweets) { collectedTweets.addAll(tweets); }
+        };
 
         TwitterClient client = new TwitterClient(
-                new Listener(new TweetStoreBuffer(tweetStore, 10)),
+                new Listener(new TweetBuffer(service, 10)),
                 new LocationBounds(-180.0, -90.0, 180.0, 90.0));
 
         client.run();
 
-        List<Tweet> collectedTweets = waitForTweets(tweetStore);
+        waitForTweets(collectedTweets);
 
         try {
             assertHaveDistinctTweets(collectedTweets);
@@ -36,13 +40,11 @@ public class TwitterClientTest {
         }
     }
 
-    private List<Tweet> waitForTweets(TweetStore tweetStore) throws InterruptedException {
-        List<Tweet> collectedTweets = tweetStore.tweets().collect(Collectors.toList());
+    private List<Tweet> waitForTweets(List<Tweet> collectedTweets) throws InterruptedException {
         final int MAX_WAIT_COUNT = 10;
         int waitCount = 0;
         while (waitCount < MAX_WAIT_COUNT && collectedTweets.size() == 0) {
             waitCount++;
-            collectedTweets = tweetStore.tweets().collect(Collectors.toList());
             Thread.sleep(1000);
         }
 
