@@ -21,7 +21,7 @@ public class TwitterClientTest {
     public void shouldCollectTweets() throws InterruptedException {
         final List<Tweet> collectedTweets = new ArrayList<>();
         TweetService service = new TweetService() {
-            @Override public SentimentTimeline analyzeSentimetOverTime(Query q) { return null; }
+            @Override public SentimentTimeline analyzeSentimentOverTime(Query q) { return null; }
             @Override public void importTweets(Collection<Tweet> tweets) { collectedTweets.addAll(tweets); }
         };
 

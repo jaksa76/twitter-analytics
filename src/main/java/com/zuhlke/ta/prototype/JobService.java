@@ -3,6 +3,7 @@ package com.zuhlke.ta.prototype;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public final class JobService extends Thread {
     private final List<SentimentTimeline> results = Collections.synchronizedList(new ArrayList<>());
@@ -26,17 +27,14 @@ public final class JobService extends Thread {
         return results;
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run() {
         try {
             while (true) {
-                Query q = pendingQueries.peek();
-                if (q != null) {
-                    results.add(tweetService.analyzeSentimetOverTime(q));
-                    pendingQueries.take();
-                } else {
-                    Thread.sleep(1000);
-                }
+                Optional.ofNullable(pendingQueries.poll(1, TimeUnit.SECONDS))
+                        .map(q -> tweetService.analyzeSentimentOverTime(q))
+                        .ifPresent(results::add);
             }
         } catch (InterruptedException e) {
             // this is ok

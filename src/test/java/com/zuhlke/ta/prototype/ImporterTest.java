@@ -11,7 +11,7 @@ public class ImporterTest {
     @Test
     public void tryImporting() throws Exception {
         Importer importer = new Importer(new TweetService() {
-            public SentimentTimeline analyzeSentimetOverTime(Query q) {
+            public SentimentTimeline analyzeSentimentOverTime(Query q) {
                 return new SentimentTimeline(q.keyword);
             }
 

@@ -18,7 +18,7 @@ public class MapDBTweetServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        Files.delete(Paths.get(TWEETS_DB));
+        new File(TWEETS_DB).delete();
         tweetService = new MapDBTweetService(new TwitterSentimentAnalyzerImpl());
     }
 
@@ -26,7 +26,7 @@ public class MapDBTweetServiceTest {
     public void importingAndAnalyzeTweets() throws Exception {
         Importer importer = new Importer(tweetService);
         importer.importTweetsFrom(new File("test_set_tweets.txt"));
-        SentimentTimeline timeline = tweetService.analyzeSentimetOverTime(new Query("Buhari"));
+        SentimentTimeline timeline = tweetService.analyzeSentimentOverTime(new Query("Buhari"));
         System.out.println(timeline);
     }
 }

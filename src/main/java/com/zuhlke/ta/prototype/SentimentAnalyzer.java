@@ -8,5 +8,5 @@ package com.zuhlke.ta.prototype;
  *
  */
 public interface SentimentAnalyzer {
-    float getSentiment(String text);
+    double getSentiment(String text);
 }

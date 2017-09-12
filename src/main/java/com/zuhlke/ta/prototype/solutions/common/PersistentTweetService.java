@@ -30,7 +30,7 @@ public class PersistentTweetService implements TweetService {
     }
 
     @Override
-    public SentimentTimeline analyzeSentimetOverTime(Query q) {
+    public SentimentTimeline analyzeSentimentOverTime(Query q) {
         final String keyword = q.keyword.toLowerCase();
         final Tracer tracer = new Tracer(q.keyword);
 
@@ -52,7 +52,7 @@ public class PersistentTweetService implements TweetService {
         addSentiment(day, sentimentAnalyzer.getSentiment(tweet.message));
     }
 
-    private static void addSentiment(Day day, float sentiment) {
+    private static void addSentiment(Day day, double sentiment) {
         if (sentiment > 0.0) day.incrementGood(); else day.incrementBad();
     }
 

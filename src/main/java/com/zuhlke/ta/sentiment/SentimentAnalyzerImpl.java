@@ -73,7 +73,7 @@ public class SentimentAnalyzerImpl implements SentimentAnalyzer {
 		return ngramFilter.filterNgrams(words);
 	}
 	
-	public float getSentiment(String text) {
+	public double getSentiment(String text) {
 		String[] sentences = sentenceDetector.getSentences(text);
 		float result = 0;
 		for(String sentence: sentences){

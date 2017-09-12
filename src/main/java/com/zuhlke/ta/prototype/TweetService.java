@@ -3,6 +3,6 @@ package com.zuhlke.ta.prototype;
 import java.util.Collection;
 
 public interface TweetService {
-    SentimentTimeline analyzeSentimetOverTime(Query q);
+    SentimentTimeline analyzeSentimentOverTime(Query q);
     void importTweets(Collection<Tweet> tweets);
 }

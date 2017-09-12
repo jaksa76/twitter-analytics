@@ -5,11 +5,9 @@ import com.zuhlke.ta.prototype.solutions.common.PersistentTweetService;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,7 +38,7 @@ public class InMemoryTweetServiceTest {
         sentimentResults.put("three", -2.3f);
         sentimentResults.put("four", 0.0f);
 
-        final SentimentTimeline timeline = service.analyzeSentimetOverTime(new Query("Keyword"));
+        final SentimentTimeline timeline = service.analyzeSentimentOverTime(new Query("Keyword"));
 
         assertThat(timeline.getQuery(), equalTo("Keyword"));
         assertThat(timeline.getDays(),

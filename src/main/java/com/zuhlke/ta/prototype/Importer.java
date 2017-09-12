@@ -7,18 +7,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Importer {
-    public static final int BATCH_SIZE = 100;
-    public static final int MAX_TWEETS_TO_IMPORT = 10000;
+    private static final int BATCH_SIZE = 100;
+    private static final int MAX_TWEETS_TO_IMPORT = 10000;
 
-    private List<Tweet> tweets = new ArrayList<>(BATCH_SIZE);
+    private List<Tweet> batch = new ArrayList<>(BATCH_SIZE);
     private TweetService tweetService;
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public Importer(TweetService tweetService) {
         this.tweetService = tweetService;
@@ -43,18 +42,13 @@ public class Importer {
 
     private void bufferTweet(String[] parts) {
         try {
-            tweets.add(new Tweet(
-                    getId(parts[1]),
-                    parts[3],
-                    parts[2],
-                    parseDate(parts[4])
-                    ));
+            batch.add(new Tweet(getId(parts[1]), parts[3], parts[2], parseDate(parts[4])));
         } catch (ParseException e) {
             System.out.println(e.getMessage());
         } catch (NumberFormatException e) {
             System.out.println("Could not parse number " + parts[1]);
         }
-        if (tweets.size() == BATCH_SIZE) flushTweets();
+        if (batch.size() == BATCH_SIZE) flushTweets();
     }
 
     private long getId(String part) {
@@ -63,11 +57,15 @@ public class Importer {
 
     private LocalDate parseDate(String part) throws ParseException {
         if (part.length() < 10) throw new ParseException("Could not parse date " + part, 0);
+        try {
             return LocalDate.parse(part.substring(0, 10));
+        } catch (DateTimeException e) {
+            throw new ParseException("Could not parse date " + part + e.getMessage(), 0);
         }
+    }
 
     private void flushTweets() {
-        tweetService.importTweets(tweets);
-        tweets = new ArrayList<>(BATCH_SIZE);
+        tweetService.importTweets(batch);
+        batch = new ArrayList<>(BATCH_SIZE);
     }
 }
