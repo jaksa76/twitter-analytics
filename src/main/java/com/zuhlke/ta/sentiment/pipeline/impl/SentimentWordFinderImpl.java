@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.zuhlke.ta.sentiment.utils.POSUtils.*;
 
@@ -39,14 +40,14 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 	}
 	
 	public List<WeightedWord> find(String... words) {
-		ArrayList<WeightedWord> result = new ArrayList<WeightedWord>();
+		ArrayList<WeightedWord> result = new ArrayList<>();
 		
 		for (String word : words) {
 			WeightedWord weightedWord = new WeightedWord(word, 1);
 
             String originalWord = word;
 
-            List<String> stems = new ArrayList<String>();
+            List<String> stems = new ArrayList<>();
 			try{
 				if(isVerb(word)){
 					word = stripWord(word);
@@ -111,18 +112,12 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 		return result;
 	}
 	
-	private float findWeight(Dictionary dict, List<String> stems) throws TokenNotFound{
-		float out = 0.0f;
-
-		for (int i = 0; i < stems.size(); i++) {
-			try {
-				out = dict.getWordWeight(stems.get(i));
-				return out;
-			} catch (TokenNotFound e) {
-				// skip
-			}
-		}
-
-		throw new TokenNotFound("no match found");
-	}	
+	private float findWeight(Dictionary dict, List<String> stems) throws TokenNotFound {
+		return stems.stream()
+				.map(dict::getWordWeight)
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.findFirst()
+				.orElseThrow(() -> new TokenNotFound("no match found"));
+	}
 }

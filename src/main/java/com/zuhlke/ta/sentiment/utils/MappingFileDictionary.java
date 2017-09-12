@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
@@ -16,11 +17,8 @@ public class MappingFileDictionary implements Dictionary {
     }
 
     @Override
-    public float getWordWeight(String word) throws TokenNotFound {
-        if (words.containsKey(word))
-            return words.get(word);
-        else
-            throw new TokenNotFound("Word not found " + word);
+    public Optional<Float> getWordWeight(String word) {
+        return Optional.ofNullable(words.get(word));
     }
 
     @Override

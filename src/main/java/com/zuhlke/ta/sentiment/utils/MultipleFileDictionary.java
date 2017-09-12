@@ -3,6 +3,7 @@ package com.zuhlke.ta.sentiment.utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Dictionary build from the union of several
@@ -21,16 +22,12 @@ public class MultipleFileDictionary implements Dictionary {
 		}
 	}
 
-	public float getWordWeight(String word) throws TokenNotFound {
-		for(Dictionary dict: dictionaries) {
-			try {
-				Float wordWeight = dict.getWordWeight(word);
-				return wordWeight;
-			} catch (TokenNotFound e) {
-				// Not found
-			}
-		}
-		throw new TokenNotFound("Word not found " +  word);
+	public Optional<Float> getWordWeight(String word) {
+		return dictionaries.stream()
+				.map(dict -> dict.getWordWeight(word))
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.findFirst();
 	}
 
 	public int getWordCount() {

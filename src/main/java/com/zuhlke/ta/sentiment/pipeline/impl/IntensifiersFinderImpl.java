@@ -65,14 +65,8 @@ public class IntensifiersFinderImpl implements IntensifiersFinder {
 	}
 	
 	private Intensifier createIdentifier(WeightedWord word) {
-		try {
-			String ww = stripWord(word.getWord());
-			float intensifierValue = getIntensifiers().getWordWeight(ww);
-			Intensifier intensifier = new Intensifier(ww, intensifierValue);
-			return intensifier;
-		} catch (TokenNotFound e) {
-			return null;
-		}
+		String ww = stripWord(word.getWord());
+		return getIntensifiers().getWordWeight(ww).map(weight -> new Intensifier(ww, weight)).orElse(null);
 	}
 	
 	public Dictionary getIntensifiers() {

@@ -2,7 +2,9 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 
 import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.NGramFilter;
-import com.zuhlke.ta.sentiment.utils.*;
+import com.zuhlke.ta.sentiment.utils.Dictionary;
+import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
+import com.zuhlke.ta.sentiment.utils.MappingFileDictionary;
 import edu.mit.jwi.item.POS;
 import edu.mit.jwi.morph.SimpleStemmer;
 
@@ -14,15 +16,13 @@ import static com.zuhlke.ta.sentiment.utils.POSUtils.*;
 
 
 public class NGramFilterImpl implements NGramFilter {
-
-	
 	private int maxL;
 	private final Dictionary nounsDictionary;
 	private final Dictionary adjDictionary;
 	private final Dictionary advDictionary;
 	private final Dictionary verbDictionary;
 	private final Dictionary intDictionary;
-	
+
 	//private final edu.mit.jwi.Dictionary dict;
 	//private final WordnetStemmer stemmer;
     private final SimpleStemmer stemmer;
@@ -36,13 +36,10 @@ public class NGramFilterImpl implements NGramFilter {
 		this.advDictionary = MappingFileDictionary.fromNgramsFile(DictionaryConstans.ADVERBS_NGRAM_FILE);
 		this.verbDictionary = MappingFileDictionary.fromNgramsFile(DictionaryConstans.VERBS_NGRAM_FILE);
 		this.intDictionary = MappingFileDictionary.fromNgramsFile(DictionaryConstans.INTENSIFIERS_NGRAM_FILE);
-		
-		//dict = new edu.mit.jwi.Dictionary(SentimentWordFinderImpl.class.getClassLoader().getResource("wordnet"));
-		//dict.open();
-		//stemmer = new WordnetStemmer(dict);
+
+
         stemmer = new SimpleStemmer();
 	}
-
 
 	@Override
 	public List<WeightedWord> filterNgrams(List<WeightedWord> words) {
@@ -97,48 +94,41 @@ public class NGramFilterImpl implements NGramFilter {
 	}
 	
 	private WeightedWord findNgram(String ngram, int length){
-		WeightedWord out = null;
-		float weight;
-		
-		try {
-			weight = nounsDictionary.getWordWeight(ngram);
-			out = new WeightedWord(ngram, length);
-			out.setOpinionWord(true);
-			out.setSentimentDegree(weight);
-		} catch (TokenNotFound e) {
-			try {
-				weight = adjDictionary.getWordWeight(ngram);
-				out = new WeightedWord(ngram, length);
-				out.setOpinionWord(true);
-				out.setSentimentDegree(weight);
-			} catch (TokenNotFound e1) {
-				try {
-					weight = advDictionary.getWordWeight(ngram);
-					out = new WeightedWord(ngram, length);
-					out.setOpinionWord(true);
-					out.setSentimentDegree(weight);
-				} catch (TokenNotFound e2) {
-					try {
-						weight = verbDictionary.getWordWeight(ngram);
-						out = new WeightedWord(ngram, length);
-						out.setOpinionWord(true);
-						out.setSentimentDegree(weight);
-					} catch (TokenNotFound e3) {
-						try {
-							weight = intDictionary.getWordWeight(ngram);
-							out = new WeightedWord(ngram, length);
-							out.setOpinionWord(false);
-							out.setIntensifier(true);
-							out.setSentimentDegree(weight);
-						} catch (TokenNotFound e4) {
-							// Simply not found
-						}
-					}
-				}
-			}
-		}
-		
-		return out;
+		return nounsDictionary.getWordWeight(ngram).map(w -> {
+				WeightedWord ww = new WeightedWord(ngram, length);
+				ww.setOpinionWord(true);
+				ww.setSentimentDegree(w);
+				return ww;
+			})
+			.orElseGet(() ->
+				adjDictionary.getWordWeight(ngram).map( w -> {
+					final WeightedWord ww = new WeightedWord(ngram, length);
+					ww.setOpinionWord(true);
+					ww.setSentimentDegree(w);
+					return ww;
+				})
+				.orElseGet(() ->
+					advDictionary.getWordWeight(ngram).map( w -> {
+						final WeightedWord ww = new WeightedWord(ngram, length);
+						ww.setOpinionWord(true);
+						ww.setSentimentDegree(w);
+						return ww;
+					})
+					.orElseGet(() ->
+						verbDictionary.getWordWeight(ngram).map( w -> {
+							final WeightedWord ww = new WeightedWord(ngram, length);
+							ww.setOpinionWord(true);
+							ww.setSentimentDegree(w);
+							return ww;
+						})
+						.orElseGet(() ->
+							intDictionary.getWordWeight(ngram).map( w -> {
+								final WeightedWord ww = new WeightedWord(ngram, length);
+								ww.setOpinionWord(true);
+								ww.setSentimentDegree(w);
+								ww.setIntensifier(true);
+								return ww;
+							}).orElse(null)))));
 	}
 	
 	private String lemmatize(String word){

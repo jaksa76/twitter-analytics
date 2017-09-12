@@ -1,5 +1,7 @@
 package com.zuhlke.ta.sentiment.utils;
 
+import java.util.Optional;
+
 /**
  * Implementation of a dictionary.
  * Each word contains a score used by
@@ -11,7 +13,7 @@ package com.zuhlke.ta.sentiment.utils;
 public interface Dictionary {
     float NO_SCORE = 0f;
 
-    float getWordWeight(String word) throws TokenNotFound;
+    Optional<Float> getWordWeight(String word);
     int getWordCount();
     boolean contains(String word);
 
