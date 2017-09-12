@@ -1,7 +1,7 @@
-package com.zuhlke.ta.prototype.mapdb;
+package com.zuhlke.ta.prototype.solutions.mapdb;
 
 import com.zuhlke.ta.prototype.Tweet;
-import com.zuhlke.ta.prototype.TweetStore;
+import com.zuhlke.ta.prototype.solutions.common.TweetStore;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
@@ -23,8 +23,8 @@ public class MapDBTweetStore implements TweetStore, Closeable {
     }
 
     @Override
-    public void addTweet(Tweet tweet) {
-        tweets.put(tweet.id, tweet);
+    public void importTweets(Stream<Tweet> tweetStream) {
+        tweetStream.forEach(t -> tweets.put(t.id, t));
     }
 
     @SuppressWarnings("unchecked")

@@ -3,6 +3,7 @@ package com.zuhlke.ta.prototype;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
@@ -14,10 +15,10 @@ public class ImporterTest {
                 return new SentimentTimeline(q.keyword);
             }
 
-            public void importTweets(Stream<Tweet> tweets) {
+            public void importTweets(Collection<Tweet> tweets) {
                 final AtomicLong count = new AtomicLong();
-                tweets.peek(t -> count.incrementAndGet() ).forEach(System.out::println);
-                
+                tweets.stream().peek(t -> count.incrementAndGet() )
+                       .forEach(System.out::println);
                 System.out.println("imported " + count.longValue() + " tweets.");
             }
         });

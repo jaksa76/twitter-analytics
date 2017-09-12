@@ -7,12 +7,12 @@ import com.zuhlke.ta.sentiment.utils.Dictionary;
 import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
 import com.zuhlke.ta.sentiment.utils.SingleFileDictionary;
 
-import java.io.IOException;
-import java.util.List;
-
 import static com.zuhlke.ta.sentiment.utils.POSUtils.isSubject;
 import static com.zuhlke.ta.sentiment.utils.POSUtils.stripWord;
 import static java.lang.Math.max;
+
+import java.io.IOException;
+import java.util.List;
 
 
 
@@ -21,7 +21,7 @@ public class NegativesFinderImpl implements NegativesFinder {
 	private final Dictionary negationWords;
 
 	public NegativesFinderImpl() throws IOException {
-		negationWords = SingleFileDictionary.fromFile(DictionaryConstans.NEGATORS_FILE);
+		negationWords = new SingleFileDictionary(DictionaryConstans.NEGATORS_FILE);
 	}
 
 	public List<WeightedWord> find(List<WeightedWord> words) {

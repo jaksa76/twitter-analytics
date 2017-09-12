@@ -17,7 +17,7 @@ public class MultipleFileDictionary implements Dictionary {
 
 	public MultipleFileDictionary(String ... dictNames) throws IOException {
 		for(String dictName: dictNames) {
-			dictionaries.add(SingleFileDictionary.fromFile(dictName));
+			dictionaries.add(new SingleFileDictionary(dictName));
 		}
 	}
 

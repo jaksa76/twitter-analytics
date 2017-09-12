@@ -8,7 +8,6 @@ import com.zuhlke.ta.sentiment.utils.SentenceDetector;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.stream;
@@ -18,62 +17,127 @@ import static java.util.stream.Collectors.joining;
 /**
  * Calculates the sentiment polarity and intensity
  * of a document. It is an implementation of the
- * work in
- * <p>
+ * work in 
+ * 
  * Maite Taboada et al. Lexicon-Based Methos for Sentiment
  * Analysis. Compuational Linguistics 37, 267-307, 2011.
- *
+ * 
  * @author hadoop
+ *
  */
 public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
 
-    private SentenceDetector sentenceDetector;
-    private ScoreCalculator calculator;
-    private WordTokenizer tokenizer;
-    private POSTokenizer posTokenizer;
-    private SentimentWordFinder wordFinder;
-    private NGramFilter ngramFilter;
+	private SentenceDetector sentenceDetector;
+	private ScoreCalculator calculator;
+	private WordTokenizer tokenizer;
+	private POSTokenizer        posTokenizer;
+	private SentimentWordFinder wordFinder;
+	private NGramFilter         ngramFilter;
+	
+	private IrrealisFinder irrealisFinder;
+	private NegativesFinder negativesFinder;
+	private IntensifiersFinder intensifiersFinder;
 
-    private IrrealisFinder irrealisFinder;
-    private NegativesFinder negativesFinder;
-    private IntensifiersFinder intensifiersFinder;
+	public TwitterSentimentAnalyzerImpl() {
+		int maxNgram = 4; // max trimgrams
 
-    public TwitterSentimentAnalyzerImpl() throws IOException, URISyntaxException {
-        int maxNgram = 4; // max trimgrams
+		try {
+			sentenceDetector = SentenceDetector.getInstance();
+			calculator = new ScoreCalculatorImpl();
+			tokenizer = new WordTokenizerImpl();
+			posTokenizer = new TwitterStanPOSTokenizerImp();
+			wordFinder = new SentimentWordFinderImpl();
+			ngramFilter = new NGramFilterImpl(maxNgram);
+			irrealisFinder = new IrrealisFinderImpl();
+			negativesFinder = new NegativesFinderImpl();
+			intensifiersFinder = new IntensifiersFinderImpl();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (URISyntaxException e) {
+			throw new RuntimeException("Could not load WordNet");
+		}
+	}
 
-        sentenceDetector = SentenceDetector.getInstance();
-        calculator = new ScoreCalculatorImpl();
-        tokenizer = new WordTokenizerImpl();
-        posTokenizer = new TwitterStanPOSTokenizerImp();
-        wordFinder = new SentimentWordFinderImpl();
-        ngramFilter = new NGramFilterImpl(maxNgram);
-        irrealisFinder = new IrrealisFinderImpl();
-        negativesFinder = new NegativesFinderImpl();
-        intensifiersFinder = new IntensifiersFinderImpl();
-    }
+	String[] getTokens(String sentence){
+		return posTokenizer.tokenize(stream(tokenizer.tokenize(sentence)).collect(joining(" ")));
+	}
 
-    String[] getTokens(String sentence) {
-        return posTokenizer.tokenize(stream(tokenizer.tokenize(sentence)).collect(joining(" ")));
-    }
+	List<WeightedWord> getSentimentWords(String[] tokens){
+		return wordFinder.find(tokens);
+	}
+	
+	List<WeightedWord> getNgramFilteredWords(List<WeightedWord> words){
+		return ngramFilter.filterNgrams(words);
+	}
+	
+	public double getSentiment(String text) {
+		String[] sentences = sentenceDetector.getSentences(text);
+		float result = 0;
+		for(String sentence: sentences){
+			List<WeightedWord> input = getSentimentWords(getTokens(sentence));
+			input = getNgramFilteredWords(input);
+			input = irrealisFinder.find(input);
+			input = intensifiersFinder.find(input);
+			//System.out.println(input);
+			input = negativesFinder.find(input);
+			result += calculator.calculate(input);
+		}
+		return result;
+	}
 
-    List<WeightedWord> getSentimentWords(String[] tokens) {
-        return wordFinder.find(tokens);
-    }
+	public WordTokenizer getTokenizer() {
+		return tokenizer;
+	}
 
-    List<WeightedWord> getNgramFilteredWords(List<WeightedWord> words) {
-        return ngramFilter.filterNgrams(words);
-    }
+	public void setTokenizer(WordTokenizer tokenizer) {
+		this.tokenizer = tokenizer;
+	}
 
-    @SuppressWarnings("Duplicates")
-    public double getSentiment(String text) {
-        return Arrays.stream(sentenceDetector.getSentences(text))
-                .map(this::getTokens)
-                .map(this::getSentimentWords)
-                .map(this::getNgramFilteredWords)
-                .map(words -> irrealisFinder.find(words))
-                .map(words -> intensifiersFinder.find(words))
-                .map(words -> negativesFinder.find(words))
-                .mapToDouble(words -> calculator.calculate(words))
-                .sum();
-    }
+	public ScoreCalculator getCalculator() {
+		return calculator;
+	}
+
+	public void setCalculator(ScoreCalculator calculator) {
+		this.calculator = calculator;
+	}
+
+	public SentimentWordFinder getWordFinder() {
+		return wordFinder;
+	}
+
+	public void setWordFinder(SentimentWordFinder wordFinder) {
+		this.wordFinder = wordFinder;
+	}
+
+	public SentenceDetector getSentenceDetector() {
+		return sentenceDetector;
+	}
+
+	public void setSentenceDetector(SentenceDetector sentenceDetector) {
+		this.sentenceDetector = sentenceDetector;
+	}
+
+	public IrrealisFinder getIrrealisFinder() {
+		return irrealisFinder;
+	}
+
+	public void setIrrealisFinder(IrrealisFinder irrealisFinder) {
+		this.irrealisFinder = irrealisFinder;
+	}
+
+	public NegativesFinder getNegativesFinder() {
+		return negativesFinder;
+	}
+
+	public void setNegativesFinder(NegativesFinder negativesFinder) {
+		this.negativesFinder = negativesFinder;
+	}
+
+	public IntensifiersFinder getIntensifiersFinder() {
+		return intensifiersFinder;
+	}
+
+	public void setIntensifiersFinder(IntensifiersFinder intensifiersFinder) {
+		this.intensifiersFinder = intensifiersFinder;
+	}
 }

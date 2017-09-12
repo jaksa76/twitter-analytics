@@ -1,7 +1,6 @@
 package com.zuhlke.ta.sentiment.utils;
 
-import java.io.IOException;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * Reads the lines of a dictionary
@@ -10,5 +9,5 @@ import java.util.stream.Stream;
  *
  */
 public interface DictionaryLineReader {
-	Stream<String> readLines(String filename) throws IOException;
+	List<String> readLines(String filename);
 }

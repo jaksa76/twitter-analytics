@@ -34,11 +34,11 @@ public class NGramFilterImpl implements NGramFilter {
 		super();
 		this.maxL = maxNgram;
 		
-		this.nounsDictionary = NGramFileDictionary.fromFile(DictionaryConstans.NOUNS_NGRAM_FILE);
-		this.adjDictionary = NGramFileDictionary.fromFile(DictionaryConstans.ADJECTIVES_NGRAM_FILE);
-		this.advDictionary = NGramFileDictionary.fromFile(DictionaryConstans.ADVERBS_NGRAM_FILE);
-		this.verbDictionary = NGramFileDictionary.fromFile(DictionaryConstans.VERBS_NGRAM_FILE);
-		this.intDictionary = NGramFileDictionary.fromFile(DictionaryConstans.INTENSIFIERS_NGRAM_FILE);
+		this.nounsDictionary = new NGramFileDictionary(DictionaryConstans.NOUNS_NGRAM_FILE);
+		this.adjDictionary = new NGramFileDictionary(DictionaryConstans.ADJECTIVES_NGRAM_FILE);
+		this.advDictionary = new NGramFileDictionary(DictionaryConstans.ADVERBS_NGRAM_FILE);
+		this.verbDictionary = new NGramFileDictionary(DictionaryConstans.VERBS_NGRAM_FILE);
+		this.intDictionary = new NGramFileDictionary(DictionaryConstans.INTENSIFIERS_NGRAM_FILE);
 		
 		//dict = new edu.mit.jwi.Dictionary(SentimentWordFinderImpl.class.getClassLoader().getResource("wordnet"));
 		//dict.open();
@@ -50,20 +50,21 @@ public class NGramFilterImpl implements NGramFilter {
 	@Override
 	public List<WeightedWord> filterNgrams(List<WeightedWord> words) {
 		
-		List<WeightedWord> last    = new ArrayList<>();
-		List<WeightedWord> current = new ArrayList<>();
+		List<WeightedWord> last    = new ArrayList<WeightedWord>();
+		List<WeightedWord> current = new ArrayList<WeightedWord>();
 		
 		// Copy original list as previous
-		last.addAll(words);
+		for(WeightedWord word : words)
+			last.add(word);
 		
 		for(int cNgram = 2; cNgram <= maxL; cNgram++){ // At least bigrams
-			current = new ArrayList<>();
+			current = new ArrayList<WeightedWord>();
 			int currPos=0;
 			while(currPos < last.size()){
 				// Try to generate n-grams out of the current words
 				int length = 0;
 				int pp = 0;
-				List<WeightedWord> nGramTok = new ArrayList<>(cNgram);
+				List<WeightedWord> nGramTok = new ArrayList<WeightedWord>(cNgram);
 				while(length < cNgram && currPos+pp < last.size()){
 					WeightedWord word = last.get(currPos+pp);
 					length += word.getLength();
@@ -93,7 +94,8 @@ public class NGramFilterImpl implements NGramFilter {
 			
 			// Clear last
 			last.clear();
-			last.addAll(current);
+			for(WeightedWord word : current)
+				last.add(word);
 		}
 			
 		return current;
@@ -101,7 +103,7 @@ public class NGramFilterImpl implements NGramFilter {
 	
 	private WeightedWord findNgram(String ngram, int length){
 		WeightedWord out = null;
-		float weight;
+		float weight = 0.0f;
 		
 		try {
 			weight = nounsDictionary.getWordWeight(ngram);
@@ -145,7 +147,7 @@ public class NGramFilterImpl implements NGramFilter {
 	}
 	
 	private String lemmatize(String word){
-		POS partofSpeech;
+		POS partofSpeech = null;
 		
 		if(isVerb(word)){
 			partofSpeech = POS.VERB;
@@ -161,7 +163,7 @@ public class NGramFilterImpl implements NGramFilter {
 
         word = stripWord(word);
         if(!word.isEmpty()){
-	        List<String> stems = new ArrayList<>();
+	        List<String> stems = new ArrayList<String>();
 	        stems.addAll(stemmer.findStems(word, partofSpeech));
 	        stems.add(word);
 	
