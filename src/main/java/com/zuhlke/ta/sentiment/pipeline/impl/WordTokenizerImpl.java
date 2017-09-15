@@ -14,19 +14,11 @@ import java.util.List;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class WordTokenizerImpl implements WordTokenizer {
-	private Tokenizer tokenizer;
-
 	private final String URL_PATTERN = "^(https?|ftp|file)://.*";
 	private final String EMAIL_PATTERN = "([^.@\\s]+)(\\.[^.@\\s]+)*@([^.@\\s]+\\.)+([^.@\\s]+)";
 	private final String NUMBERS_PATTERN = "[0-9]*";
 
-	public WordTokenizerImpl() {
-			setup();
-	}
-
-	private void setup() {
-		tokenizer = new UAX29URLEmailTokenizer(new StringReader(""));
-	}
+	private Tokenizer tokenizer = new UAX29URLEmailTokenizer(new StringReader(""));
 
 	public List<String> tokenize(String sentence) {
 		final List<String> words = new ArrayList<String>();
