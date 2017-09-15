@@ -7,7 +7,6 @@ import com.zuhlke.ta.sentiment.utils.SentenceDetector;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
@@ -45,12 +44,12 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
         this.intensifiersFinder = intensifiersFinder;
     }
 
-    public static TwitterSentimentAnalyzerImpl create() throws IOException, URISyntaxException {
-        return new TwitterSentimentAnalyzerImpl(SentenceDetector.getInstance(), new WordTokenizerImpl(), new SentimentWordFinderImpl(), new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), new NegativesFinderImpl(), new IntensifiersFinderImpl());
+    public static TwitterSentimentAnalyzerImpl create(SentenceDetector sentenceDetector) throws IOException, URISyntaxException {
+        return new TwitterSentimentAnalyzerImpl(sentenceDetector, new WordTokenizerImpl(), new SentimentWordFinderImpl(), new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), new NegativesFinderImpl(), new IntensifiersFinderImpl());
     }
 
     public double getSentiment(String text) {
-        return Arrays.stream(sentenceDetector.getSentences(text))
+        return stream(sentenceDetector.sentencesFrom(text))
                 .map(this::tokensFrom)
                 .map(wordFinder::find)
                 .map(ngramFilter::filterNgrams)

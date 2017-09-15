@@ -1,10 +1,10 @@
 package com.zuhlke.ta.sentiment.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Abstract superclass of all the text analyzers which need 
@@ -14,41 +14,21 @@ import opennlp.tools.sentdetect.SentenceModel;
  *
  */
 public class SentenceDetector {
-
 	private SentenceDetectorME sentenceDetector;	
-	public final static String SENTENCE_MODEL = "en-sent.bin";
+	private final static String SENTENCE_MODEL = "en-sent.bin";
 	private static SentenceDetector instance;
-	
-	
-	private SentenceDetector() {
-		super();
-		InputStream smodelIn = null;
-		try {
-			// Load sentence detector model
-			smodelIn = SentenceDetector.class.getResourceAsStream(SENTENCE_MODEL); 
-			SentenceModel sentenceModel = new SentenceModel(smodelIn);	
-			sentenceDetector = new SentenceDetectorME(sentenceModel);
-		}catch (IOException e) {
-			throw new RuntimeException(e);
-		}finally {
-			if (smodelIn != null) {
-				try {
-					smodelIn.close();
-				}
-				catch (IOException e) {
-				}
-			}
+
+	private SentenceDetector(SentenceDetectorME sentenceDetector) {
+		this.sentenceDetector = sentenceDetector;
+	}
+
+	public static SentenceDetector fromResource() throws IOException {
+		try (InputStream modelResource = SentenceDetector.class.getResourceAsStream(SENTENCE_MODEL)) {
+			return new SentenceDetector(new SentenceDetectorME(new SentenceModel(modelResource)));
 		}
 	}
 
-	public static SentenceDetector getInstance(){
-		if(instance == null){
-			instance = new SentenceDetector();
-		}
-		return instance;
-	}
-	
-	public String[] getSentences(String text) {
+	public String[] sentencesFrom(String text) {
 		return sentenceDetector.sentDetect(text);
 	}
 	
