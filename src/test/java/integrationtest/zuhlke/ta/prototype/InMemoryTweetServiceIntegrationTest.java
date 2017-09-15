@@ -15,7 +15,7 @@ public class InMemoryTweetServiceIntegrationTest {
     public void testAnalyzingTweets() throws Exception {
         PersistentTweetService tweetService = new InMemoryTweetService(TwitterSentimentAnalyzerImpl.create());
         Importer importer = new Importer(tweetService);
-        importer.importTweetsFrom(new File("test_set_tweets.txt"));
+        importer.importTweetsFrom(new File("minimal_set_tweets.txt"));
         SentimentTimeline timeline = tweetService.analyzeSentimentOverTime(new Query("buhari"));
         System.out.println(timeline);
     }

@@ -1,14 +1,13 @@
 package com.zuhlke.ta.sentiment;
 
 import com.zuhlke.ta.prototype.SentimentAnalyzer;
-import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.*;
 import com.zuhlke.ta.sentiment.pipeline.impl.*;
 import com.zuhlke.ta.sentiment.utils.SentenceDetector;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.Arrays;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
@@ -46,40 +45,24 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
         this.intensifiersFinder = intensifiersFinder;
     }
 
-    public static TwitterSentimentAnalyzerImpl create() {
-        try {
-            return new TwitterSentimentAnalyzerImpl(SentenceDetector.getInstance(), new WordTokenizerImpl(), new SentimentWordFinderImpl(), new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), new NegativesFinderImpl(), new IntensifiersFinderImpl());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("Could not load WordNet");
-        }
+    public static TwitterSentimentAnalyzerImpl create() throws IOException, URISyntaxException {
+        return new TwitterSentimentAnalyzerImpl(SentenceDetector.getInstance(), new WordTokenizerImpl(), new SentimentWordFinderImpl(), new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), new NegativesFinderImpl(), new IntensifiersFinderImpl());
     }
 
     public double getSentiment(String text) {
-        String[] sentences = sentenceDetector.getSentences(text);
-        float result = 0;
-        for (String sentence : sentences) {
-            List<WeightedWord> input = getSentimentWords(getTokens(sentence));
-            input = getNgramFilteredWords(input);
-            input = irrealisFinder.find(input);
-            input = intensifiersFinder.find(input);
-            //System.out.println(input);
-            input = negativesFinder.find(input);
-            result += calculator.calculate(input);
-        }
-        return result;
+        return Arrays.stream(sentenceDetector.getSentences(text))
+                .map(this::tokensFrom)
+                .map(wordFinder::find)
+                .map(ngramFilter::filterNgrams)
+                .map(irrealisFinder::find)
+                .map(intensifiersFinder::find)
+                .map(negativesFinder::find)
+                .mapToDouble(calculator::calculate)
+                .sum();
     }
 
-    private String[] getTokens(String sentence) {
+    private String[] tokensFrom(String sentence) {
         return posTokenizer.tokenize(stream(tokenizer.tokenize(sentence)).collect(joining(" ")));
     }
 
-    private List<WeightedWord> getSentimentWords(String[] tokens) {
-        return wordFinder.find(tokens);
-    }
-
-    private List<WeightedWord> getNgramFilteredWords(List<WeightedWord> words) {
-        return ngramFilter.filterNgrams(words);
-    }
 }
