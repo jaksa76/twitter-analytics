@@ -61,7 +61,7 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
     }
 
     private String[] tokensFrom(String sentence) {
-        return posTokenizer.tokenize(stream(tokenizer.tokenize(sentence)).collect(joining(" ")));
+        return posTokenizer.tokenize(tokenizer.tokenize(sentence).stream().collect(joining(" ")));
     }
 
 }

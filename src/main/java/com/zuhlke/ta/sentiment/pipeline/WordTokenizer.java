@@ -1,5 +1,7 @@
 package com.zuhlke.ta.sentiment.pipeline;
 
+import java.util.List;
+
 /**
  * Find all the tokens present in
  * a sentence. 
@@ -9,5 +11,5 @@ package com.zuhlke.ta.sentiment.pipeline;
  */
 public interface WordTokenizer {
 
-	String[] tokenize(String sentence);
+	List<String> tokenize(String sentence);
 }
