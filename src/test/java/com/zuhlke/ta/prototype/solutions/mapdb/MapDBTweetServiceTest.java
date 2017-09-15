@@ -8,18 +8,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static com.zuhlke.ta.prototype.solutions.mapdb.MapDBTweetStore.TWEETS_DB;
+import static java.nio.file.Files.deleteIfExists;
 
 public class MapDBTweetServiceTest {
     private MapDBTweetService tweetService;
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Before
     public void setUp() throws Exception {
-        new File(TWEETS_DB).delete();
-        tweetService = new MapDBTweetService(new TwitterSentimentAnalyzerImpl());
+        deleteIfExists(new File(TWEETS_DB).toPath());
+        tweetService = new MapDBTweetService(TwitterSentimentAnalyzerImpl.create());
     }
 
     @Test
