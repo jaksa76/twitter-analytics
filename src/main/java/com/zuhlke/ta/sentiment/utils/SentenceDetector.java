@@ -14,11 +14,10 @@ import java.io.InputStream;
  *
  */
 public class SentenceDetector {
-	private SentenceDetectorME sentenceDetector;	
-	private final static String SENTENCE_MODEL = "en-sent.bin";
-	private static SentenceDetector instance;
+    private final static String SENTENCE_MODEL = "en-sent.bin";
+	private SentenceDetectorME sentenceDetector;
 
-	private SentenceDetector(SentenceDetectorME sentenceDetector) {
+    private SentenceDetector(SentenceDetectorME sentenceDetector) {
 		this.sentenceDetector = sentenceDetector;
 	}
 
