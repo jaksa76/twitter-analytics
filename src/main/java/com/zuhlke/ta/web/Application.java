@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.zuhlke.ta.prototype.*;
 import com.zuhlke.ta.prototype.solutions.inmemory.InMemoryTweetService;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
+import com.zuhlke.ta.sentiment.pipeline.impl.SentimentWordFinderImpl;
 import com.zuhlke.ta.sentiment.utils.SentenceDetector;
 import com.zuhlke.ta.twitterclient.TwitterClientRunner;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,7 @@ import static spark.Spark.post;
 
 public class Application {
     public static void main(String[] args) throws IOException, URISyntaxException {
-        SentimentAnalyzer sentimentAnalyzer = TwitterSentimentAnalyzerImpl.create(SentenceDetector.fromResource());
+        SentimentAnalyzer sentimentAnalyzer = TwitterSentimentAnalyzerImpl.create(SentenceDetector.fromResource(), SentimentWordFinderImpl.fromDictionaries());
         TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
 //        TweetService tweetService = new MapDBTweetService(sentimentAnalyzer);
         JobService jobService = new JobService(tweetService);

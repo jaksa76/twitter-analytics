@@ -1,10 +1,5 @@
 package com.zuhlke.ta.sentiment.pipeline.impl;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.SentimentWordFinder;
 import com.zuhlke.ta.sentiment.utils.Dictionary;
@@ -14,22 +9,27 @@ import com.zuhlke.ta.sentiment.utils.TokenNotFound;
 import edu.mit.jwi.item.POS;
 import edu.mit.jwi.morph.SimpleStemmer;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.zuhlke.ta.sentiment.utils.POSUtils.*;
 
 public class SentimentWordFinderImpl implements SentimentWordFinder {
-	
+	//private final edu.mit.jwi.Dictionary dict;
+	private final SimpleStemmer stemmer = new SimpleStemmer();
+
 	private final Dictionary nounsDictionary;
 	private final Dictionary adjDictionary;
 	private final Dictionary advDictionary;
 	private final Dictionary verbDictionary;
-	//private final edu.mit.jwi.Dictionary dict;
-	private final SimpleStemmer stemmer;
-	
-	public SentimentWordFinderImpl() throws IOException, URISyntaxException {
-		this.nounsDictionary = new SingleFileDictionary(DictionaryConstans.NOUNS_FILE);
-		this.adjDictionary = new SingleFileDictionary(DictionaryConstans.ADJECTIVES_FILE);
-		this.advDictionary = new SingleFileDictionary(DictionaryConstans.ADVERBS_FILE);
-		this.verbDictionary = new SingleFileDictionary(DictionaryConstans.VERBS_FILE);
+
+	private SentimentWordFinderImpl(SingleFileDictionary nounsDictionary, SingleFileDictionary adjDictionary, SingleFileDictionary advDictionary, SingleFileDictionary verbDictionary) {
+		this.nounsDictionary = nounsDictionary;
+		this.adjDictionary = adjDictionary;
+		this.advDictionary = advDictionary;
+		this.verbDictionary = verbDictionary;
 
         //URL dir_url = ClassLoader.getSystemResource("wordnet");
         //File file = new File(dir_url.toURI());
@@ -38,9 +38,12 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 		//dict.open();
 		//stemmer = new WordnetStemmer(dict);
         // TODO: try to solve the issue
-        stemmer = new SimpleStemmer();
 	}
-	
+
+	public static SentimentWordFinderImpl fromDictionaries() throws IOException, URISyntaxException {
+		return new SentimentWordFinderImpl(new SingleFileDictionary(DictionaryConstans.NOUNS_FILE), new SingleFileDictionary(DictionaryConstans.ADJECTIVES_FILE), new SingleFileDictionary(DictionaryConstans.ADVERBS_FILE), new SingleFileDictionary(DictionaryConstans.VERBS_FILE));
+	}
+
 	public List<WeightedWord> find(String... words) {
 		ArrayList<WeightedWord> result = new ArrayList<WeightedWord>();
 		

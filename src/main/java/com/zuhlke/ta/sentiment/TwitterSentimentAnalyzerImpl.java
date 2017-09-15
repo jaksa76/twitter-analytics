@@ -44,8 +44,8 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
         this.intensifiersFinder = intensifiersFinder;
     }
 
-    public static TwitterSentimentAnalyzerImpl create(SentenceDetector sentenceDetector) throws IOException, URISyntaxException {
-        return new TwitterSentimentAnalyzerImpl(sentenceDetector, new WordTokenizerImpl(), new SentimentWordFinderImpl(), new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), new NegativesFinderImpl(), new IntensifiersFinderImpl());
+    public static TwitterSentimentAnalyzerImpl create(SentenceDetector sentenceDetector, SentimentWordFinderImpl wordFinder) throws IOException, URISyntaxException {
+        return new TwitterSentimentAnalyzerImpl(sentenceDetector, new WordTokenizerImpl(), wordFinder, new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), new NegativesFinderImpl(), new IntensifiersFinderImpl());
     }
 
     public double getSentiment(String text) {
