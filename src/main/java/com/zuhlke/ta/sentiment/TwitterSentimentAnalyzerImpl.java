@@ -21,8 +21,6 @@ import static java.util.stream.Collectors.joining;
  * 
  * Maite Taboada et al. Lexicon-Based Methos for Sentiment
  * Analysis. Compuational Linguistics 37, 267-307, 2011.
- * 
- * @author hadoop
  *
  */
 public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
@@ -83,61 +81,5 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
 			result += calculator.calculate(input);
 		}
 		return result;
-	}
-
-	public WordTokenizer getTokenizer() {
-		return tokenizer;
-	}
-
-	public void setTokenizer(WordTokenizer tokenizer) {
-		this.tokenizer = tokenizer;
-	}
-
-	public ScoreCalculator getCalculator() {
-		return calculator;
-	}
-
-	public void setCalculator(ScoreCalculator calculator) {
-		this.calculator = calculator;
-	}
-
-	public SentimentWordFinder getWordFinder() {
-		return wordFinder;
-	}
-
-	public void setWordFinder(SentimentWordFinder wordFinder) {
-		this.wordFinder = wordFinder;
-	}
-
-	public SentenceDetector getSentenceDetector() {
-		return sentenceDetector;
-	}
-
-	public void setSentenceDetector(SentenceDetector sentenceDetector) {
-		this.sentenceDetector = sentenceDetector;
-	}
-
-	public IrrealisFinder getIrrealisFinder() {
-		return irrealisFinder;
-	}
-
-	public void setIrrealisFinder(IrrealisFinder irrealisFinder) {
-		this.irrealisFinder = irrealisFinder;
-	}
-
-	public NegativesFinder getNegativesFinder() {
-		return negativesFinder;
-	}
-
-	public void setNegativesFinder(NegativesFinder negativesFinder) {
-		this.negativesFinder = negativesFinder;
-	}
-
-	public IntensifiersFinder getIntensifiersFinder() {
-		return intensifiersFinder;
-	}
-
-	public void setIntensifiersFinder(IntensifiersFinder intensifiersFinder) {
-		this.intensifiersFinder = intensifiersFinder;
 	}
 }
