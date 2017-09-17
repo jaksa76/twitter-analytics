@@ -41,7 +41,7 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 	}
 
 	public static SentimentWordFinderImpl fromDictionaries() throws IOException, URISyntaxException {
-		return new SentimentWordFinderImpl(new SingleFileDictionary(DictionaryConstans.NOUNS_FILE), new SingleFileDictionary(DictionaryConstans.ADJECTIVES_FILE), new SingleFileDictionary(DictionaryConstans.ADVERBS_FILE), new SingleFileDictionary(DictionaryConstans.VERBS_FILE));
+		return new SentimentWordFinderImpl(SingleFileDictionary.fromFilepath(DictionaryConstans.NOUNS_FILE), SingleFileDictionary.fromFilepath(DictionaryConstans.ADJECTIVES_FILE), SingleFileDictionary.fromFilepath(DictionaryConstans.ADVERBS_FILE), SingleFileDictionary.fromFilepath(DictionaryConstans.VERBS_FILE));
 	}
 
 	public List<WeightedWord> find(String... words) {

@@ -8,11 +8,11 @@ import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
 import com.zuhlke.ta.sentiment.utils.SingleFileDictionary;
 import com.zuhlke.ta.sentiment.utils.TokenNotFound;
 
-import static com.zuhlke.ta.sentiment.utils.POSUtils.stripWord;
-import static java.lang.Math.max;
-
 import java.io.IOException;
 import java.util.List;
+
+import static com.zuhlke.ta.sentiment.utils.POSUtils.stripWord;
+import static java.lang.Math.max;
 
 
 
@@ -23,7 +23,7 @@ public class IntensifiersFinderImpl implements IntensifiersFinder {
 	
 	public IntensifiersFinderImpl() throws IOException {
 		try {
-			intensifiers = new SingleFileDictionary(DictionaryConstans.INTENSIFIERS_FILE);
+			intensifiers = SingleFileDictionary.fromFilepath(DictionaryConstans.INTENSIFIERS_FILE);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
