@@ -55,7 +55,7 @@ public class FileToListReader {
             try {
                 final String line = reader.readLine();
                 if (line != null) {
-                    action.accept(line);
+					action.accept(line);
                     return true;
                 }
             } catch (IOException e) {

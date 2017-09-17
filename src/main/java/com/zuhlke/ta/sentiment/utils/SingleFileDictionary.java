@@ -3,9 +3,11 @@ package com.zuhlke.ta.sentiment.utils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
 
 /** 
  * Reads a dictionary. The dictionary can be present
@@ -16,29 +18,10 @@ import java.util.Map;
  *
  */
 public class SingleFileDictionary implements Dictionary {
-
 	private final Map<String, Float> words;
 
 	private SingleFileDictionary(Map<String, Float> words) {
 		this.words = words;
-	}
-
-	public static SingleFileDictionary fromFilepath(String dictPath) throws IOException {
-		final Map<String, Float> words = new HashMap<String, Float>();
-
-		DictionaryLineReader reader = DictionaryLineReaderFactory.getInstance().getReader();
-
-		List<String> lines = reader.readLines(dictPath);
-		for (String line : lines) {
-			String[] splitLine = StringUtils.split(line);
-
-			if(splitLine.length > 1){
-				words.put(splitLine[0], Float.parseFloat(splitLine[1])); // Score is present
-			}else{
-				words.put(splitLine[0], 0f); // No score is present
-			}
-		}
-		return new SingleFileDictionary(words);
 	}
 
 	public float getWordWeight(String word) throws TokenNotFound {
@@ -55,4 +38,17 @@ public class SingleFileDictionary implements Dictionary {
 	public boolean contains(String word) {
 		return words.containsKey(word);
 	}
+
+	public static SingleFileDictionary fromFilepath(String dictPath) throws IOException {
+		final Map<String, Float> words = DictionaryLineReaderFactory.getInstance().getReader()
+				.linesFrom(dictPath)
+				.map(StringUtils::split)
+				.collect(toMap(toWord, toWeight, overwriteWithLatest));
+
+		return new SingleFileDictionary(words);
+	}
+
+	private static final Function<String[], Float> toWeight = splitLine -> splitLine.length > 1 ? Float.parseFloat(splitLine[1]) : 0f;
+	private static final Function<String[], String> toWord = splitLine -> splitLine[0];
+	private static final BinaryOperator<Float> overwriteWithLatest =  (prev, newer) -> newer;
 }
