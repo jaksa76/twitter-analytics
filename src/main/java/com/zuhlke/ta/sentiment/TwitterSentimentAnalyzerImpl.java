@@ -32,35 +32,35 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
 
     private IrrealisFinder irrealisFinder;
     private NegativesFinder negativesFinder;
-    private IntensifiersFinder intensifiersFinder;// max trimgrams
+    private Enhancer enhancer;// max trimgrams
 
-    private TwitterSentimentAnalyzerImpl(SentenceDetector sentenceDetector, WordTokenizerImpl tokenizer, SentimentWordFinderImpl wordFinder, NGramFilterImpl ngramFilter, IrrealisFinderImpl irrealisFinder, NegativesFinderImpl negativesFinder, IntensifiersFinderImpl intensifiersFinder) {
+    private TwitterSentimentAnalyzerImpl(SentenceDetector sentenceDetector, WordTokenizerImpl tokenizer, SentimentWordFinderImpl wordFinder, NGramFilterImpl ngramFilter, IrrealisFinderImpl irrealisFinder, NegativesFinderImpl negativesFinder, IntensifiersEnhancer intensifiersFinder) {
         this.sentenceDetector = sentenceDetector;
         this.tokenizer = tokenizer;
         this.wordFinder = wordFinder;
         this.ngramFilter = ngramFilter;
         this.irrealisFinder = irrealisFinder;
         this.negativesFinder = negativesFinder;
-        this.intensifiersFinder = intensifiersFinder;
+        this.enhancer = intensifiersFinder;
     }
 
     public static TwitterSentimentAnalyzerImpl create(SentenceDetector sentenceDetector, SentimentWordFinderImpl wordFinder) throws IOException, URISyntaxException {
-        return new TwitterSentimentAnalyzerImpl(sentenceDetector, new WordTokenizerImpl(), wordFinder, new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), new NegativesFinderImpl(), new IntensifiersFinderImpl());
+        return new TwitterSentimentAnalyzerImpl(sentenceDetector, new WordTokenizerImpl(), wordFinder, new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), NegativesFinderImpl.negativesFinder(), new IntensifiersEnhancer());
     }
 
     public double getSentiment(String text) {
         return stream(sentenceDetector.sentencesFrom(text))
-                .map(this::tokensFrom)
+                .map(this::tokenized)
                 .map(wordFinder::find)
                 .map(ngramFilter::filterNgrams)
                 .map(irrealisFinder::find)
-                .map(intensifiersFinder::find)
+                .map(enhancer::enhance)
                 .map(negativesFinder::find)
                 .mapToDouble(calculator::calculate)
                 .sum();
     }
 
-    private String[] tokensFrom(String sentence) {
+    private String[] tokenized(String sentence) {
         return posTokenizer.tokenize(tokenizer.tokenize(sentence).stream().collect(joining(" ")));
     }
 

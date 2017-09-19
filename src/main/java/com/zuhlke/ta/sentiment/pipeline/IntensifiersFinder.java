@@ -11,8 +11,6 @@ import java.util.List;
  * 
  * @author hadoop
  */
-public interface IntensifiersFinder {
-	
-	List<WeightedWord> find(List<WeightedWord> input);
-	
+public interface IntensifiersFinder extends Enhancer {
+
 }

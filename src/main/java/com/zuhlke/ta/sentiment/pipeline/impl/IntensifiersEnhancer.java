@@ -2,6 +2,7 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 
 import com.zuhlke.ta.sentiment.model.Intensifier;
 import com.zuhlke.ta.sentiment.model.WeightedWord;
+import com.zuhlke.ta.sentiment.pipeline.Enhancer;
 import com.zuhlke.ta.sentiment.pipeline.IntensifiersFinder;
 import com.zuhlke.ta.sentiment.utils.*;
 
@@ -13,12 +14,12 @@ import static java.lang.Math.max;
 
 
 
-public class IntensifiersFinderImpl implements IntensifiersFinder {
+public class IntensifiersEnhancer implements Enhancer {
 
 	private Dictionary intensifiers;
 	private static int SCOPE_LEN = 6;
 	
-	public IntensifiersFinderImpl() throws IOException {
+	public IntensifiersEnhancer() throws IOException {
 		try {
 			intensifiers = Dictionaries.singleFileDictionaryFrom(DictionaryConstans.INTENSIFIERS_FILE);
 		} catch (IOException e) {
@@ -30,7 +31,7 @@ public class IntensifiersFinderImpl implements IntensifiersFinder {
 	 * For each sentiment word found, it finds potential 
 	 * intensifiers that can modify 
 	 */
-	public List<WeightedWord> find(List<WeightedWord> words) {
+	public List<WeightedWord> enhance(List<WeightedWord> words) {
 		for (int i = 0; i < words.size(); i++) {
 			WeightedWord word = words.get(i);
 
