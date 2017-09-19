@@ -1,6 +1,7 @@
 package com.zuhlke.ta.sentiment.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Map;
@@ -11,9 +12,18 @@ import static java.util.stream.Collectors.toMap;
 
 public class Dictionaries {
     public static Dictionary singleFileDictionaryFrom(String dictPath) throws IOException {
+        return dictionaryFrom(dictPath, StringUtils::split);
+    }
+
+    public static Dictionary ngramDictionaryFrom(String dictPath) throws IOException {
+        return dictionaryFrom(dictPath, line -> StringUtils.split(line, ':'));
+    }
+
+    @NotNull
+    private static Dictionary dictionaryFrom(String dictPath, Function<String, String[]> splitter) {
         final Map<String, Float> words = DictionaryLineReaderFactory.getInstance().getReader()
                 .linesFrom(dictPath)
-                .map(StringUtils::split)
+                .map(splitter)
                 .collect(toMap(toWord, toWeight, overwriteWithLatest));
 
         return new SingleFileDictionary(words);
