@@ -3,10 +3,7 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 import com.zuhlke.ta.sentiment.model.Intensifier;
 import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.IntensifiersFinder;
-import com.zuhlke.ta.sentiment.utils.Dictionary;
-import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
-import com.zuhlke.ta.sentiment.utils.SingleFileDictionary;
-import com.zuhlke.ta.sentiment.utils.TokenNotFound;
+import com.zuhlke.ta.sentiment.utils.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +20,7 @@ public class IntensifiersFinderImpl implements IntensifiersFinder {
 	
 	public IntensifiersFinderImpl() throws IOException {
 		try {
-			intensifiers = SingleFileDictionary.fromFilepath(DictionaryConstans.INTENSIFIERS_FILE);
+			intensifiers = Dictionaries.singleFileDictionaryFrom(DictionaryConstans.INTENSIFIERS_FILE);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

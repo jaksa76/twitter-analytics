@@ -2,9 +2,9 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 
 import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.IrrealisFinder;
+import com.zuhlke.ta.sentiment.utils.Dictionaries;
 import com.zuhlke.ta.sentiment.utils.Dictionary;
 import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
-import com.zuhlke.ta.sentiment.utils.SingleFileDictionary;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,7 +20,7 @@ public class IrrealisFinderImpl implements IrrealisFinder {
 	private final Dictionary irrealisWords;
 
 	public IrrealisFinderImpl() throws IOException {
-		irrealisWords = SingleFileDictionary.fromFilepath(DictionaryConstans.IRREALIS_FILE);
+		irrealisWords = Dictionaries.singleFileDictionaryFrom(DictionaryConstans.IRREALIS_FILE);
 	}
 
 	public List<WeightedWord> find(List<WeightedWord> words) {

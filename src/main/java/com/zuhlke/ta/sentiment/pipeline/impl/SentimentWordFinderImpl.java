@@ -2,10 +2,7 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 
 import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.SentimentWordFinder;
-import com.zuhlke.ta.sentiment.utils.Dictionary;
-import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
-import com.zuhlke.ta.sentiment.utils.SingleFileDictionary;
-import com.zuhlke.ta.sentiment.utils.TokenNotFound;
+import com.zuhlke.ta.sentiment.utils.*;
 import edu.mit.jwi.item.POS;
 import edu.mit.jwi.morph.SimpleStemmer;
 
@@ -41,7 +38,7 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 	}
 
 	public static SentimentWordFinderImpl fromDictionaries() throws IOException, URISyntaxException {
-		return new SentimentWordFinderImpl(SingleFileDictionary.fromFilepath(DictionaryConstans.NOUNS_FILE), SingleFileDictionary.fromFilepath(DictionaryConstans.ADJECTIVES_FILE), SingleFileDictionary.fromFilepath(DictionaryConstans.ADVERBS_FILE), SingleFileDictionary.fromFilepath(DictionaryConstans.VERBS_FILE));
+		return new SentimentWordFinderImpl(Dictionaries.singleFileDictionaryFrom(DictionaryConstans.NOUNS_FILE), Dictionaries.singleFileDictionaryFrom(DictionaryConstans.ADJECTIVES_FILE), Dictionaries.singleFileDictionaryFrom(DictionaryConstans.ADVERBS_FILE), Dictionaries.singleFileDictionaryFrom(DictionaryConstans.VERBS_FILE));
 	}
 
 	public List<WeightedWord> find(String... words) {
