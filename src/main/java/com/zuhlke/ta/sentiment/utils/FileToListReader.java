@@ -2,31 +2,18 @@ package com.zuhlke.ta.sentiment.utils;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+@SuppressWarnings("WeakerAccess")
 public class FileToListReader {
-	public static List<String> readFile(String fileName) {
-
-		List<String> out = new ArrayList<String>();
-		try {
-			BufferedReader reader = new BufferedReader(
-					new InputStreamReader(FileToListReader.class.getClassLoader().getResourceAsStream(fileName)));
-			String line = null;
-			while((line = reader.readLine()) != null)
-				out.add(line);
-			return out;
-		} catch (IOException e) {
-			return out;
-		}
-	}
-
 	public static Stream<String> linesFromResourceFile(String fileName) {
 		final LineReadingSpliterator lineReading = new LineReadingSpliterator(resourceReaderFor(fileName), fileName);
 		return StreamSupport.stream(lineReading, false)
