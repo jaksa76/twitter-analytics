@@ -39,7 +39,7 @@ public class SingleFileDictionary implements Dictionary {
 		return words.containsKey(word);
 	}
 
-	public static SingleFileDictionary fromFilepath(String dictPath) throws IOException {
+	public static Dictionary fromFilepath(String dictPath) throws IOException {
 		final Map<String, Float> words = DictionaryLineReaderFactory.getInstance().getReader()
 				.linesFrom(dictPath)
 				.map(StringUtils::split)

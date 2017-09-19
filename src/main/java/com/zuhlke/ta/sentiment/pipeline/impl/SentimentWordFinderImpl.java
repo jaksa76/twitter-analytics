@@ -25,7 +25,7 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 	private final Dictionary advDictionary;
 	private final Dictionary verbDictionary;
 
-	private SentimentWordFinderImpl(SingleFileDictionary nounsDictionary, SingleFileDictionary adjDictionary, SingleFileDictionary advDictionary, SingleFileDictionary verbDictionary) {
+	private SentimentWordFinderImpl(Dictionary nounsDictionary, Dictionary adjDictionary, Dictionary advDictionary, Dictionary verbDictionary) {
 		this.nounsDictionary = nounsDictionary;
 		this.adjDictionary = adjDictionary;
 		this.advDictionary = advDictionary;
