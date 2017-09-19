@@ -31,21 +31,21 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
     private NGramFilter ngramFilter;
 
     private IrrealisFinder irrealisFinder;
-    private NegativesFinder negativesFinder;
-    private Enhancer enhancer;// max trimgrams
+    private Enhancer negatives;
+    private Enhancer intensifiers;// max trimgrams
 
-    private TwitterSentimentAnalyzerImpl(SentenceDetector sentenceDetector, WordTokenizerImpl tokenizer, SentimentWordFinderImpl wordFinder, NGramFilterImpl ngramFilter, IrrealisFinderImpl irrealisFinder, NegativesFinderImpl negativesFinder, Enhancer intensifiersFinder) {
+    private TwitterSentimentAnalyzerImpl(SentenceDetector sentenceDetector, WordTokenizerImpl tokenizer, SentimentWordFinderImpl wordFinder, NGramFilterImpl ngramFilter, IrrealisFinderImpl irrealisFinder, NegativesEnhancer negatives, Enhancer intensifiers) {
         this.sentenceDetector = sentenceDetector;
         this.tokenizer = tokenizer;
         this.wordFinder = wordFinder;
         this.ngramFilter = ngramFilter;
         this.irrealisFinder = irrealisFinder;
-        this.negativesFinder = negativesFinder;
-        this.enhancer = intensifiersFinder;
+        this.negatives = negatives;
+        this.intensifiers = intensifiers;
     }
 
     public static TwitterSentimentAnalyzerImpl create(SentenceDetector sentenceDetector, SentimentWordFinderImpl wordFinder) throws IOException, URISyntaxException {
-        return new TwitterSentimentAnalyzerImpl(sentenceDetector, new WordTokenizerImpl(), wordFinder, new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), NegativesFinderImpl.negativesFinder(), new IntensifiersEnhancer());
+        return new TwitterSentimentAnalyzerImpl(sentenceDetector, new WordTokenizerImpl(), wordFinder, new NGramFilterImpl(MAX_NGRAM), new IrrealisFinderImpl(), NegativesEnhancer.negativesFinder(), new IntensifiersEnhancer());
     }
 
     public double getSentiment(String text) {
@@ -54,8 +54,8 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
                 .map(wordFinder::find)
                 .map(ngramFilter::filterNgrams)
                 .map(irrealisFinder::find)
-                .map(enhancer::enhance)
-                .map(negativesFinder::find)
+                .map(intensifiers::enhance)
+                .map(negatives::enhance)
                 .mapToDouble(calculator::calculate)
                 .sum();
     }

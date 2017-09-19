@@ -2,7 +2,7 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 
 import com.zuhlke.ta.sentiment.model.Negator;
 import com.zuhlke.ta.sentiment.model.WeightedWord;
-import com.zuhlke.ta.sentiment.pipeline.NegativesFinder;
+import com.zuhlke.ta.sentiment.pipeline.Enhancer;
 import com.zuhlke.ta.sentiment.utils.Dictionaries;
 import com.zuhlke.ta.sentiment.utils.Dictionary;
 import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
@@ -16,15 +16,15 @@ import static java.lang.Math.max;
 
 
 @SuppressWarnings("WeakerAccess")
-public class NegativesFinderImpl implements NegativesFinder {
+public class NegativesEnhancer implements Enhancer {
     private static final int MAXIMUM_DISTANCE = 5;
     private final Dictionary negationWords;
 
-    public NegativesFinderImpl(Dictionary negationWords) throws IOException {
+    public NegativesEnhancer(Dictionary negationWords) throws IOException {
         this.negationWords = negationWords;
     }
 
-    public List<WeightedWord> find(List<WeightedWord> words) {
+    public List<WeightedWord> enhance(List<WeightedWord> words) {
         for (int i = 0; i < words.size(); i++) {
             WeightedWord word = words.get(i);
 
@@ -48,12 +48,11 @@ public class NegativesFinderImpl implements NegativesFinder {
     }
 
     private boolean isNegationWord(WeightedWord weightedWord) {
-        String ww = stripWord(weightedWord.getWord());
-        return negationWords.contains(ww);
+        return negationWords.contains(stripWord(weightedWord.getWord()));
     }
 
-    public static NegativesFinderImpl negativesFinder() throws IOException {
-        return new NegativesFinderImpl(Dictionaries.singleFileDictionaryFrom(DictionaryConstans.NEGATORS_FILE));
+    public static NegativesEnhancer negativesFinder() throws IOException {
+        return new NegativesEnhancer(Dictionaries.singleFileDictionaryFrom(DictionaryConstans.NEGATORS_FILE));
     }
 
 }
