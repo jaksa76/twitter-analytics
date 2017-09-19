@@ -3,7 +3,6 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 import com.zuhlke.ta.sentiment.model.Intensifier;
 import com.zuhlke.ta.sentiment.model.WeightedWord;
 import com.zuhlke.ta.sentiment.pipeline.Enhancer;
-import com.zuhlke.ta.sentiment.pipeline.IntensifiersFinder;
 import com.zuhlke.ta.sentiment.utils.*;
 
 import java.io.IOException;
@@ -62,25 +61,16 @@ public class IntensifiersEnhancer implements Enhancer {
 	
 	private Boolean isIntensifier(WeightedWord word) {
 		String ww = stripWord(word.getWord());
-		return getIntensifiers().contains(ww);
+		return intensifiers.contains(ww);
 	}
 	
 	private Intensifier createIdentifier(WeightedWord word) {
 		try {
 			String ww = stripWord(word.getWord());
-			float intensifierValue = getIntensifiers().getWordWeight(ww);
-			Intensifier intensifier = new Intensifier(ww, intensifierValue);
-			return intensifier;
+			float intensifierValue = intensifiers.getWordWeight(ww);
+			return new Intensifier(ww, intensifierValue);
 		} catch (TokenNotFound e) {
 			return null;
 		}
-	}
-	
-	public Dictionary getIntensifiers() {
-		return intensifiers;
-	}
-
-	public void setIntensifiers(Dictionary intensifiers) {
-		this.intensifiers = intensifiers;
 	}
 }
