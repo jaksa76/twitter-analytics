@@ -7,6 +7,6 @@ import com.zuhlke.ta.prototype.solutions.common.PersistentTweetService;
 
 public class TweetServices {
     public static TweetService bigQuery(SentimentAnalyzer sentimentAnalyzer) {
-        return new PersistentTweetService(sentimentAnalyzer, new BigQueryTweetStore(null));
+        return new PersistentTweetService(sentimentAnalyzer, BigQueryTweetStore.create());
     }
 }

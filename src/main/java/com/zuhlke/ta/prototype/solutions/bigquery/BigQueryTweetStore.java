@@ -4,11 +4,13 @@ import com.google.cloud.bigquery.*;
 import com.zuhlke.ta.prototype.Tweet;
 import com.zuhlke.ta.prototype.solutions.common.TweetStore;
 import com.zuhlke.ta.sentiment.pipeline.impl.FatalError;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -29,10 +31,28 @@ public class BigQueryTweetStore implements TweetStore {
 
     @Override
     public Stream<Tweet> tweets() {
-        final QueryResponse response = bigQuery.query(QueryRequest.of("SELECT * FROM [zuhlke-camp:zuhlke_camp_dataset.tweets_with_keyword] LIMIT 1000"));
+        QueryResponse response = queryResponse();
+        if (response.hasErrors()) {
+            System.err.println(response.getExecutionErrors());
+            return Stream.empty();
+        }
         return StreamSupport.stream(response.getResult().iterateAll().spliterator(), false)
                 .map(BigQueryTweetStore::asTweet)
                 .peek(System.out::println);
+    }
+
+    @NotNull
+    private QueryResponse queryResponse() {
+        try {
+            QueryResponse response = bigQuery.query(QueryRequest.of("SELECT * FROM [zuhlke-camp:zuhlke_camp_dataset.tweets_with_keyword]"));
+            while (!response.jobCompleted()) {
+                TimeUnit.MILLISECONDS.sleep(100);
+                response = bigQuery.getQueryResults(response.getJobId());
+            }
+            return response;
+        } catch (InterruptedException e) {
+            throw new FatalError("interrupted", e);
+        }
     }
 
     private static Tweet asTweet(List<FieldValue> fieldValues) {
