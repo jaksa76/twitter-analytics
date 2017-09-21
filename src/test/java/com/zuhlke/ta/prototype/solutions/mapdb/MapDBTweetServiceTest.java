@@ -4,6 +4,8 @@ import com.zuhlke.ta.prototype.Importer;
 import com.zuhlke.ta.prototype.Query;
 import com.zuhlke.ta.prototype.SentimentTimeline;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
+import com.zuhlke.ta.sentiment.pipeline.impl.SentimentWordFinderImpl;
+import com.zuhlke.ta.sentiment.utils.SentenceDetector;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -15,11 +17,10 @@ import static java.nio.file.Files.deleteIfExists;
 public class MapDBTweetServiceTest {
     private MapDBTweetService tweetService;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Before
     public void setUp() throws Exception {
         deleteIfExists(new File(TWEETS_DB).toPath());
-        tweetService = new MapDBTweetService(TwitterSentimentAnalyzerImpl.create());
+        tweetService = new MapDBTweetService(TwitterSentimentAnalyzerImpl.create(SentenceDetector.fromResource(), SentimentWordFinderImpl.fromDictionaries()));
     }
 
     @Test

@@ -6,6 +6,8 @@ import com.zuhlke.ta.prototype.SentimentTimeline;
 import com.zuhlke.ta.prototype.solutions.common.PersistentTweetService;
 import com.zuhlke.ta.prototype.solutions.inmemory.InMemoryTweetService;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
+import com.zuhlke.ta.sentiment.pipeline.impl.SentimentWordFinderImpl;
+import com.zuhlke.ta.sentiment.utils.SentenceDetector;
 import org.junit.Test;
 
 import java.io.File;
@@ -13,7 +15,7 @@ import java.io.File;
 public class InMemoryTweetServiceIntegrationTest {
     @Test
     public void testAnalyzingTweets() throws Exception {
-        PersistentTweetService tweetService = new InMemoryTweetService(TwitterSentimentAnalyzerImpl.create());
+        PersistentTweetService tweetService = new InMemoryTweetService(TwitterSentimentAnalyzerImpl.create(SentenceDetector.fromResource(), SentimentWordFinderImpl.fromDictionaries()));
         Importer importer = new Importer(tweetService);
         importer.importTweetsFrom(new File("minimal_set_tweets.txt"));
         SentimentTimeline timeline = tweetService.analyzeSentimentOverTime(new Query("buhari"));
