@@ -13,12 +13,13 @@ public class InMemoryTweetStore implements TweetStore {
     private final List<Tweet> tweets = new ArrayList<>();
 
     @Override
-    public void importTweets(Stream<Tweet> tweets) {
+    public synchronized void importTweets(Stream<Tweet> tweets) {
         this.tweets.addAll(tweets.collect(toList()));
     }
 
     @Override
-    public Stream<Tweet> tweets() {
-        return tweets.stream();
+    public synchronized Stream<Tweet> tweets() {
+        // Make a copy of the tweets so we can still append new ones whilst the analysis is running
+        return new ArrayList<>(tweets).stream();
     }
 }
