@@ -30,6 +30,6 @@ public class TwitterClientRunner {
 
         client.run();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> client.close()));
+        Runtime.getRuntime().addShutdownHook(new Thread(client::close));
     }
 }

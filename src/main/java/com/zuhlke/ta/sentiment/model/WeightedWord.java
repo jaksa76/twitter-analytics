@@ -1,51 +1,50 @@
 package com.zuhlke.ta.sentiment.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class WeightedWord {
+	private static final int NEGATION_BIAS = 4;
 	private final String word;
     private boolean isOpinionWord;
     private boolean isLimitWord;
     private boolean isIntensifier;
 	private float sentimentDegree;
 	private int length; // It can be a n-gram
-	private final List<Intensifier> intensifiers = new ArrayList<Intensifier>();
-	private final List<Negator> negators = new ArrayList<Negator>();
+	private final List<Intensifier> intensifiers = new ArrayList<>();
+	private final List<Negator> negators = new ArrayList<>();
 
 	public WeightedWord(String word, int length) {
 		this.word = word;
 		this.length = length;
 	}
 
-	
+	public double score() {
+		float wordValue = intensifiers.stream()
+				.map(Intensifier::getIntensity)
+				.reduce(sentimentDegree, (l, r) -> l * r);
+
+		for (int i = 0; i < negators.size(); i++) {
+            if (wordValue < 0)
+                wordValue = wordValue + NEGATION_BIAS;
+            else if (wordValue > 0)
+                wordValue = wordValue - NEGATION_BIAS;
+        }
+        return wordValue;
+    }
+
+
 	public int getLength() {
 		return length;
 	}
 
-
-	public void setLength(int length) {
-		this.length = length;
-	}
-
-
-	public boolean isIntensifier() {
-		return isIntensifier;
-	}
-
-	public void setIntensifier(boolean isIntensifier) {
-		this.isIntensifier = isIntensifier;
-	}
+	public void markAsItensifier() { this.isIntensifier = true; }
 
 	public boolean isLimitWord() {
 		return isLimitWord;
 	}
 
-	public void setLimitWord(boolean isLimitWord) {
-		this.isLimitWord = isLimitWord;
-	}
-
+	public void markAsLimitWord() { this.isLimitWord = true; }
 
 	public boolean isOpinionWord() {
 		return isOpinionWord;
@@ -53,10 +52,6 @@ public class WeightedWord {
 
 	public void setOpinionWord(boolean isOpinionWord) {
 		this.isOpinionWord = isOpinionWord;
-	}
-
-	public float getSentimentDegree() {
-		return sentimentDegree;
 	}
 
 	public void setSentimentDegree(float sentimentDegree) {
@@ -67,16 +62,8 @@ public class WeightedWord {
 		return word;
 	}
 
-	public List<Intensifier> getIntensifiers() {
-		return Collections.unmodifiableList(intensifiers);
-	}
-
 	public void addIntensifier(Intensifier intensifier) {
 		intensifiers.add(intensifier);
-	}
-
-	public List<Negator> getNegators() {
-		return Collections.unmodifiableList(negators);
 	}
 
 	public void addNegator(Negator negator) {

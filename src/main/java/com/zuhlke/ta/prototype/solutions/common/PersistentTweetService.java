@@ -56,7 +56,6 @@ public class PersistentTweetService implements TweetService {
     }
 
     private static class Tracer {
-        final long start = System.currentTimeMillis();
         final AtomicLong count = new AtomicLong();
         final String keyword;
 

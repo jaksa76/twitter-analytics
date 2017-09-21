@@ -42,14 +42,14 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 	}
 
 	public List<WeightedWord> find(String... words) {
-		ArrayList<WeightedWord> result = new ArrayList<WeightedWord>();
+		ArrayList<WeightedWord> result = new ArrayList<>();
 		
 		for (String word : words) {
 			WeightedWord weightedWord = new WeightedWord(word, 1);
 
             String originalWord = word;
 
-            List<String> stems = new ArrayList<String>();
+            List<String> stems = new ArrayList<>();
 			try{
 				if(isVerb(word)){
 					word = stripWord(word);
@@ -95,8 +95,7 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 						}
 					}
 				}else if (isLimitWord(word)){
-					word = stripWord(word);
-					weightedWord.setLimitWord(true);
+					weightedWord.markAsLimitWord();
 					weightedWord.setOpinionWord(false);
 					weightedWord.setSentimentDegree(0);
 				}
@@ -115,11 +114,11 @@ public class SentimentWordFinderImpl implements SentimentWordFinder {
 	}
 	
 	private float findWeight(Dictionary dict, List<String> stems) throws TokenNotFound{
-		float out = 0.0f;
+		float out;
 
-		for (int i = 0; i < stems.size(); i++) {
+		for (String stem : stems) {
 			try {
-				out = dict.getWordWeight(stems.get(i));
+				out = dict.getWordWeight(stem);
 				return out;
 			} catch (TokenNotFound e) {
 				// skip

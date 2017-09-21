@@ -1,7 +1,7 @@
 package com.zuhlke.ta.sentiment.pipeline.impl;
 
 import com.zuhlke.ta.sentiment.model.WeightedWord;
-import com.zuhlke.ta.sentiment.pipeline.IrrealisFinder;
+import com.zuhlke.ta.sentiment.pipeline.Enhancer;
 import com.zuhlke.ta.sentiment.utils.Dictionaries;
 import com.zuhlke.ta.sentiment.utils.Dictionary;
 import com.zuhlke.ta.sentiment.utils.DictionaryConstans;
@@ -14,15 +14,15 @@ import static com.zuhlke.ta.sentiment.utils.POSUtils.stripWord;
 import static java.lang.Math.max;
 
 
-public class IrrealisFinderImpl implements IrrealisFinder {
+public class IrrealisEnhancer implements Enhancer {
     private static final int MAXIMUM_DISTANCE = 7;
     private final Dictionary irrealisWords;
 
-    public IrrealisFinderImpl() throws IOException {
+    public IrrealisEnhancer() throws IOException {
         irrealisWords = Dictionaries.singleFileDictionaryFrom(DictionaryConstans.IRREALIS_FILE);
     }
 
-    public List<WeightedWord> find(List<WeightedWord> words) {
+    public List<WeightedWord> enhance(List<WeightedWord> words) {
         for (int i = 0; i < words.size(); i++) {
             WeightedWord word = words.get(i);
 

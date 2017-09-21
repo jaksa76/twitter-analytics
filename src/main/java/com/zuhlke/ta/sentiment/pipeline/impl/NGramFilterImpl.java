@@ -14,8 +14,6 @@ import static com.zuhlke.ta.sentiment.utils.POSUtils.*;
 
 
 public class NGramFilterImpl implements NGramFilter {
-
-	
 	private int maxL;
 	private final Dictionary nounsDictionary;
 	private final Dictionary adjDictionary;
@@ -128,7 +126,7 @@ public class NGramFilterImpl implements NGramFilter {
 							weight = intDictionary.getWordWeight(ngram);
 							out = new WeightedWord(ngram, length);
 							out.setOpinionWord(false);
-							out.setIntensifier(true);
+							out.markAsItensifier();
 							out.setSentimentDegree(weight);
 						} catch (TokenNotFound e4) {
 							// Simply not found

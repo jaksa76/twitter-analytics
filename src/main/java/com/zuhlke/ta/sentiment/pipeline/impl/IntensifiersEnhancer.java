@@ -32,11 +32,11 @@ public class IntensifiersEnhancer implements Enhancer {
 	 */
 	public List<WeightedWord> enhance(List<WeightedWord> words) {
 		for (int i = 0; i < words.size(); i++) {
-			WeightedWord word = words.get(i);
+			final WeightedWord word = words.get(i);
 
 			if(word.isOpinionWord()){
 				for (int j = max(0, i-1); j >= max(0, i-SCOPE_LEN); j--) {
-					WeightedWord previousWord = words.get(j);
+					final WeightedWord previousWord = words.get(j);
 					if (isIntensifier(previousWord)) {
 						// There are words that can act as sentiment words or
 						// as intensifiers, change the role!!
@@ -60,15 +60,13 @@ public class IntensifiersEnhancer implements Enhancer {
 	}
 	
 	private Boolean isIntensifier(WeightedWord word) {
-		String ww = stripWord(word.getWord());
-		return intensifiers.contains(ww);
+		return intensifiers.contains(stripWord(word.getWord()));
 	}
 	
 	private Intensifier createIdentifier(WeightedWord word) {
 		try {
 			String ww = stripWord(word.getWord());
-			float intensifierValue = intensifiers.getWordWeight(ww);
-			return new Intensifier(ww, intensifierValue);
+			return new Intensifier(ww, intensifiers.getWordWeight(ww));
 		} catch (TokenNotFound e) {
 			return null;
 		}
