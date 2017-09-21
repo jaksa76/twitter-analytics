@@ -24,6 +24,7 @@ public final class JobService extends Thread {
     }
 
     public List<SentimentTimeline> getResults() {
+        System.out.println("getResults");
         return results;
     }
 
@@ -42,6 +43,7 @@ public final class JobService extends Thread {
     }
 
     public List<Query> getPending() {
+        System.out.println("getPending");
         return new ArrayList<>(pendingQueries);
     }
 }

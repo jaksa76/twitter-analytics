@@ -98,7 +98,41 @@
 			<artifactId>mapdb</artifactId>
 			<version>3.0.3</version>
 		</dependency>
-	</dependencies>
+
+		<!-- https://mvnrepository.com/artifact/com.amazonaws.athena.jdbc/atl-athena-jdbc-driver -->
+
+        <!--
+        From lib directory:
+        mvn install:install-file -Dfile=./libs/AthenaJDBC41-1.1.0.jar -DgroupId=com.amazonaws -DartifactId=athena.jdbc41 -Dversion=1.1.0 -Dpackaging=jar -DgeneratePom=true
+        -->
+
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>athena.jdbc41</artifactId>
+            <version>1.1.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-core -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-core</artifactId>
+            <version>1.11.199</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk</artifactId>
+            <version>1.11.199</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
+        </dependency>
+
+
+
+    </dependencies>
 
 	<build>
 		<plugins>
