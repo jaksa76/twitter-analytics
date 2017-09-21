@@ -35,7 +35,7 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
     private Enhancer negatives;
     private Enhancer intensifiers;// max trimgrams
 
-    private TwitterSentimentAnalyzerImpl(SentenceDetector sentenceDetector, WordTokenizerImpl tokenizer, SentimentWordFinderImpl wordFinder, NGramFilterImpl ngramFilter, IrrealisEnhancer irrealis, NegativesEnhancer negatives, Enhancer intensifiers) {
+    private TwitterSentimentAnalyzerImpl(SentenceDetector sentenceDetector, WordTokenizer tokenizer, SentimentWordFinderImpl wordFinder, NGramFilterImpl ngramFilter, IrrealisEnhancer irrealis, NegativesEnhancer negatives, Enhancer intensifiers) {
         this.sentenceDetector = sentenceDetector;
         this.tokenizer = tokenizer;
         this.wordFinder = wordFinder;
