@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collector;
 import java.util.stream.Collector.Characteristics;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -69,12 +68,7 @@ public class PersistentTweetService implements TweetService {
         }
 
         void summarise() {
-            if (count.get() == 0) {
-                System.out.println("Processed " + 0 + " tweets/s");
-            } else {
-                System.out.println("Processed " + (1000 * count.get() / (System.currentTimeMillis() - start)) + " tweets/s");
-            }
-
+            System.out.println("Processed " + count.get() + " tweest");
         }
     }
 
