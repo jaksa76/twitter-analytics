@@ -1,6 +1,5 @@
 package com.zuhlke.ta.twitterclient;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import twitter4j.*;
