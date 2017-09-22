@@ -79,7 +79,12 @@ public class BigQueryTweetStore implements TweetStore {
     @NotNull
     private QueryResponse queryResponse() {
         try {
-            QueryResponse response = bigQuery.query(QueryRequest.of("SELECT * FROM [zuhlke-camp:zuhlke_camp_dataset.tweets_with_keyword] ORDER BY timestamp ASC"));
+            QueryResponse response = bigQuery.query(QueryRequest.of(
+                    "SELECT tweetid, user, content, timestamp FROM [zuhlke-camp:zuhlke_camp_dataset.tweets] " +
+                            "WHERE tweetid IS NOT null " +
+                            "AND content LIKE '%boko%' " +
+                            "ORDER BY timestamp ASC"
+            ));
             while (!response.jobCompleted()) {
                 TimeUnit.MILLISECONDS.sleep(100);
                 response = bigQuery.getQueryResults(response.getJobId());
@@ -91,21 +96,20 @@ public class BigQueryTweetStore implements TweetStore {
     }
 
     private static Tweet asTweet(List<FieldValue> fieldValues) {
-        return new Tweet(123,
-                fieldValues.get(3).getStringValue(),
+        return new Tweet(
+                fieldValues.get(0).getLongValue(),
+                fieldValues.get(1).getStringValue(),
                 fieldValues.get(2).getStringValue(),
                 dateFrom(fieldValues));
     }
 
     private static LocalDate dateFrom(List<FieldValue> fieldValues) {
-        return Instant.ofEpochMilli(MILLISECONDS.convert(fieldValues.get(4).getTimestampValue(), MICROSECONDS))
+        return Instant.ofEpochMilli(MILLISECONDS.convert(fieldValues.get(3).getTimestampValue(), MICROSECONDS))
                 .atZone(ZoneId.of("UTC"))
                 .toLocalDate();
     }
 
     public static BigQueryTweetStore create() {
-        final BigQuery bigQuery = BigQueryOptions.getDefaultInstance().getService();
-
-        return new BigQueryTweetStore(bigQuery);
+        return new BigQueryTweetStore(BigQueryOptions.getDefaultInstance().getService());
     }
 }
