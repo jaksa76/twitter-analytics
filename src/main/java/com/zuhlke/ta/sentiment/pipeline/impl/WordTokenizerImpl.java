@@ -15,8 +15,6 @@ import java.util.List;
 import static org.apache.lucene.analysis.standard.UAX29URLEmailTokenizer.TOKEN_TYPES;
 
 public class WordTokenizerImpl implements WordTokenizer {
-    private final String EMAIL_PATTERN = "([^.@\\s]+)(\\.[^.@\\s]+)*@([^.@\\s]+\\.)+([^.@\\s]+)";
-
     public List<String> tokenize(String sentence) {
         final List<String> words = new ArrayList<>();
         try (UAX29URLEmailTokenizer tokenizer = new UAX29URLEmailTokenizer(new StringReader(sentence))) {
