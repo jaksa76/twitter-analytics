@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static com.amazonaws.athena.jdbc.shaded.org.apache.commons.lang.StringEscapeUtils.escapeSql;
 import static java.sql.DriverManager.getConnection;
 
 public class AthenaJdbcClient {
@@ -28,7 +29,7 @@ public class AthenaJdbcClient {
     public List<Tweet> selectContentMatching(String keyword) {
         System.out.println("selectContentMatching -> " + keyword);
         Connection conn = null;
-        Statement statement = null;
+        Statement statement = null; // AthenaJdbcClient does not support PreparedStatements! :(
         List<Tweet> results = new ArrayList<>();
         try {
             Properties info = properties();
@@ -45,7 +46,7 @@ public class AthenaJdbcClient {
                     "         CASE when sentiment > 0.0 THEN '' ELSE null END AS positive," +
                     "         CASE when sentiment < 0.0 THEN '' ELSE null END AS negative" +
                     "  FROM intalert.tweets_partial" +
-                    "  WHERE lower(content) LIKE '%"+keyword+"%')" +
+                    "  WHERE lower(content) LIKE '%" + escapeSql(keyword) + "%')" +
                     " SELECT tdate," +
                     "       count(positive) AS positive_count," +
                     "       count(negative) AS negative_count" +
