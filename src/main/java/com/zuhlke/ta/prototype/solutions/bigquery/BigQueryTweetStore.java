@@ -9,8 +9,11 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -36,15 +39,47 @@ public class BigQueryTweetStore implements TweetStore {
             System.err.println(response.getExecutionErrors());
             return Stream.empty();
         }
-        return StreamSupport.stream(response.getResult().iterateAll().spliterator(), false)
+
+        return StreamSupport.stream(lazySpliterator(response.getResult().iterateAll()), false)
                 .map(BigQueryTweetStore::asTweet)
                 .peek(System.out::println);
     }
 
+    private static Spliterator<List<FieldValue>> lazySpliterator(final Iterable<List<FieldValue>> results) {
+        final Iterator<List<FieldValue>> iterator = results.iterator();
+
+        return new Spliterator<List<FieldValue>>() {
+            @Override
+            public boolean tryAdvance(Consumer<? super List<FieldValue>> action) {
+                if (iterator.hasNext()) {
+                    action.accept(iterator.next());
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public Spliterator<List<FieldValue>> trySplit() {
+                return null;
+            }
+
+            @Override
+            public long estimateSize() {
+                return -1;
+            }
+
+            @Override
+            public int characteristics() {
+                return ORDERED | DISTINCT | NONNULL | IMMUTABLE;
+            }
+        };
+    }
+
+
     @NotNull
     private QueryResponse queryResponse() {
         try {
-            QueryResponse response = bigQuery.query(QueryRequest.of("SELECT * FROM [zuhlke-camp:zuhlke_camp_dataset.tweets_with_keyword]"));
+            QueryResponse response = bigQuery.query(QueryRequest.of("SELECT * FROM [zuhlke-camp:zuhlke_camp_dataset.tweets_with_keyword] ORDER BY timestamp ASC"));
             while (!response.jobCompleted()) {
                 TimeUnit.MILLISECONDS.sleep(100);
                 response = bigQuery.getQueryResults(response.getJobId());
