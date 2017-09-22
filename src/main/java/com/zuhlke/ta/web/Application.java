@@ -1,19 +1,20 @@
 package com.zuhlke.ta.web;
 
 import com.google.common.base.Strings;
-import com.zuhlke.ta.prototype.*;
-import com.zuhlke.ta.prototype.solutions.inmemory.InMemoryTweetService;
+import com.zuhlke.ta.prototype.JobService;
+import com.zuhlke.ta.prototype.Query;
+import com.zuhlke.ta.prototype.SentimentAnalyzer;
+import com.zuhlke.ta.prototype.TweetService;
+import com.zuhlke.ta.prototype.solutions.TweetServices;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
 import com.zuhlke.ta.sentiment.pipeline.impl.SentimentWordFinderImpl;
 import com.zuhlke.ta.sentiment.utils.SentenceDetector;
-import com.zuhlke.ta.twitterclient.TwitterClientRunner;
 import org.jetbrains.annotations.NotNull;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -25,21 +26,23 @@ import static spark.Spark.post;
 public class Application {
     public static void main(String[] args) throws IOException, URISyntaxException {
         SentimentAnalyzer sentimentAnalyzer = TwitterSentimentAnalyzerImpl.create(SentenceDetector.fromResource(), SentimentWordFinderImpl.fromDictionaries());
-        TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
+//        TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
 //        TweetService tweetService = new MapDBTweetService(sentimentAnalyzer);
+        TweetService tweetService = TweetServices.bigQuery(sentimentAnalyzer);
         JobService jobService = new JobService(tweetService);
-        Importer importer = new Importer(tweetService);
-        importer.importTweetsFrom(new File("test_set_tweets.txt"));
+//        Importer importer = new Importer(tweetService);
+//        importer.importTweetsFrom(new File("test_set_tweets.txt"));
 
         FreeMarkerEngine freeMarker = new FreeMarkerEngine();
 
-//        staticFiles.location("/spark/template/freemarker");
         get("/", (req, resp) -> homepageData(jobService), freeMarker);
         get("/results/", (req, resp) -> jobService.getResults());
         get("/pending/", (req, resp) -> jobService.getPending());
         post("/jobs/", (req, resp) -> enqueueJob(jobService, req, resp));
 
-        TwitterClientRunner.runClient(tweetService);
+        System.out.println("Browse at http://localhost:4567/");
+
+//        TwitterClientRunner.runClient(tweetService);
     }
 
     @NotNull

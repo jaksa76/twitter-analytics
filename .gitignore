@@ -1,3 +1,6 @@
 .idea
 target
 tweets.db
+.idea
+.idea/libraries
+*.iml
