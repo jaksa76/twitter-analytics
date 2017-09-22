@@ -51,7 +51,10 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
 
     public double getSentiment(String text) {
         return stream(sentenceDetector.sentencesFrom(text))
-                .map(this::tokenized)
+                .map(sentence -> posTokenizer.tokenize(tokenizer
+                        .tokenize(sentence)
+                        .stream()
+                        .collect(joining(" "))))
                 .map(wordFinder::find)
                 .map(ngramFilter::filterNgrams)
                 .map(irrealis::enhance)
@@ -60,10 +63,6 @@ public class TwitterSentimentAnalyzerImpl implements SentimentAnalyzer {
                 .flatMap(Collection::stream)
                 .mapToDouble(WeightedWord::score)
                 .sum();
-    }
-
-    private String[] tokenized(String sentence) {
-        return posTokenizer.tokenize(tokenizer.tokenize(sentence).stream().collect(joining(" ")));
     }
 
 }

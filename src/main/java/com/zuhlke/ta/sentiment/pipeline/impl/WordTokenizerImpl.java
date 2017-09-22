@@ -3,56 +3,40 @@ package com.zuhlke.ta.sentiment.pipeline.impl;
 import com.zuhlke.ta.sentiment.pipeline.WordTokenizer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.UAX29URLEmailTokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttributeImpl;
+import org.apache.lucene.analysis.tokenattributes.PackedTokenAttributeImpl;
+import org.apache.lucene.util.AttributeImpl;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-@SuppressWarnings("FieldCanBeLocal")
-public class WordTokenizerImpl implements WordTokenizer {
-    private final String URL_PATTERN = "^(https?|ftp|file)://.*";
-    private final String EMAIL_PATTERN = "([^.@\\s]+)(\\.[^.@\\s]+)*@([^.@\\s]+\\.)+([^.@\\s]+)";
-    private final String NUMBERS_PATTERN = "[0-9]+";
+import static org.apache.lucene.analysis.standard.UAX29URLEmailTokenizer.TOKEN_TYPES;
 
-    private Tokenizer tokenizer = new UAX29URLEmailTokenizer(new StringReader(""));
+public class WordTokenizerImpl implements WordTokenizer {
+    private final String EMAIL_PATTERN = "([^.@\\s]+)(\\.[^.@\\s]+)*@([^.@\\s]+\\.)+([^.@\\s]+)";
 
     public List<String> tokenize(String sentence) {
-        final List<String> words = new ArrayList<String>();
-        resetWith(sentence);
-        while (movedToNextToken()) {
-            CharTermAttributeImpl attr = tokenizer.getAttribute(CharTermAttributeImpl.class);
-            if (attr != null) {
-                final String word = attr.toString();
-                if (!isARecognisedPattern(word)) {
+        final List<String> words = new ArrayList<>();
+        try (UAX29URLEmailTokenizer tokenizer = new UAX29URLEmailTokenizer(new StringReader(sentence))) {
+            tokenizer.reset();
+            while (tokenizer.incrementToken()) {
+                Iterator<AttributeImpl> attributeIterator = tokenizer.getAttributeImplsIterator();
+                PackedTokenAttributeImpl attr = (PackedTokenAttributeImpl) attributeIterator.next();
+                if (attr != null && isARecognisedPattern(attr)) {
+                    final String word = attr.toString();
                     words.add(word);
                 }
             }
-        }
-        return words;
-    }
-
-    private boolean movedToNextToken() {
-        try {
-            return tokenizer.incrementToken();
+            return words;
         } catch (IOException e) {
-            throw new FatalError("next token", e);
+            throw new FatalError(String.format("Cannot tokenize sentence: %s", sentence), e);
         }
     }
 
-    private void resetWith(String sentence) {
-        try {
-            tokenizer.close();
-            tokenizer.setReader(new StringReader(sentence));
-            tokenizer.reset();
-        } catch (IOException e) {
-            throw new FatalError("tokenizing " + sentence, e);
-        }
-    }
-
-    private boolean isARecognisedPattern(String word) {
-        return word.matches(EMAIL_PATTERN) || word.matches(NUMBERS_PATTERN) || word.matches(URL_PATTERN);
+    private boolean isARecognisedPattern(PackedTokenAttributeImpl attribute) {
+        return attribute.type().equals(TOKEN_TYPES[UAX29URLEmailTokenizer.ALPHANUM]);
     }
 
 }
