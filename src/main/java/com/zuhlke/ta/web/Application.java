@@ -41,7 +41,6 @@ public class Application {
     }
 
     private static Object enqueueJob(JobService jobService, Request req, Response resp) {
-        System.out.println("enqueueJob");
         String keyword = req.queryMap("keyword").value();
         Query q = new Query(keyword);
         if (!Strings.isNullOrEmpty(keyword)) jobService.enqueueQuery(q);
