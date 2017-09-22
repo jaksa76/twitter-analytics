@@ -3,12 +3,8 @@ package com.zuhlke.ta.web;
 import com.google.common.base.Strings;
 import com.zuhlke.ta.athena.AthenaJdbcClient;
 import com.zuhlke.ta.athena.AthenaTweetService;
-import com.zuhlke.ta.prototype.JobService;
-import com.zuhlke.ta.prototype.Query;
-import com.zuhlke.ta.prototype.SentimentAnalyzer;
-import com.zuhlke.ta.prototype.TweetService;
-import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
-import org.jetbrains.annotations.NotNull;
+import com.zuhlke.ta.model.Query;
+import com.zuhlke.ta.service.JobService;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -25,9 +21,8 @@ import static spark.Spark.post;
 public class Application {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        SentimentAnalyzer sentimentAnalyzer = new TwitterSentimentAnalyzerImpl();
         AthenaJdbcClient athenaJdbcClient = new AthenaJdbcClient();
-        TweetService tweetService = new AthenaTweetService(sentimentAnalyzer, athenaJdbcClient);
+        AthenaTweetService tweetService = new AthenaTweetService(athenaJdbcClient);
         JobService jobService = new JobService(tweetService);
 
         FreeMarkerEngine freeMarker = new FreeMarkerEngine();
@@ -38,7 +33,6 @@ public class Application {
         post("/jobs/", (req, resp) -> enqueueJob(jobService, req, resp));
     }
 
-    @NotNull
     private static ModelAndView homepageData(JobService jobService) {
         Map<String, Object> model = new HashMap<>();
         model.put("results", jobService.getResults());
@@ -46,7 +40,6 @@ public class Application {
         return new ModelAndView(model, "index.html");
     }
 
-    @NotNull
     private static Object enqueueJob(JobService jobService, Request req, Response resp) {
         System.out.println("enqueueJob");
         String keyword = req.queryMap("keyword").value();

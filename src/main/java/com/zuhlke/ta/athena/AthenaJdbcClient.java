@@ -1,6 +1,6 @@
 package com.zuhlke.ta.athena;
 
-import org.jetbrains.annotations.NotNull;
+import com.zuhlke.ta.model.Tweet;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -15,7 +15,6 @@ public class AthenaJdbcClient {
 
     private static final String athenaUrl = "jdbc:awsathena://athena.eu-west-1.amazonaws.com:443";
 
-    @NotNull
     private static Properties properties() throws ClassNotFoundException {
         Class.forName("com.amazonaws.athena.jdbc.AthenaDriver");
         Properties info = new Properties();
@@ -26,11 +25,11 @@ public class AthenaJdbcClient {
         return info;
     }
 
-    public List<NeoTweet> selectContentMatching(String keyword) {
+    public List<Tweet> selectContentMatching(String keyword) {
         System.out.println("selectContentMatching -> " + keyword);
         Connection conn = null;
         Statement statement = null;
-        List<NeoTweet> results = new ArrayList<>();
+        List<Tweet> results = new ArrayList<>();
         try {
             Properties info = properties();
 
@@ -56,7 +55,7 @@ public class AthenaJdbcClient {
             );
 
             while (rs.next()) {
-                results.add(NeoTweet.from(
+                results.add(Tweet.from(
                     rs.getString("tdate"),
                     rs.getString("positive_count"),
                     rs.getString("negative_count")));
@@ -84,7 +83,7 @@ public class AthenaJdbcClient {
                 ex.printStackTrace();
             }
         }
-        System.out.printf("Finished connectivity test.");
+        System.out.println("Finished connectivity.");
         return results;
     }
 
