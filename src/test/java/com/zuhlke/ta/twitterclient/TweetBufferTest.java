@@ -2,12 +2,12 @@ package com.zuhlke.ta.twitterclient;
 
 import com.zuhlke.ta.prototype.Tweet;
 import com.zuhlke.ta.prototype.TweetService;
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.time.LocalDate;
 import java.util.Collection;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -59,7 +59,7 @@ public class TweetBufferTest {
     }
 
     private Tweet createTestTweet() {
-        return new Tweet(0, "", "", LocalDate.of(2017, 9, 4));
+        return new Tweet(0, "", "", LocalDate.of(2017, 9, 4), 1.0f);
     }
 
     private StreamCountCapture prepareToCaptureSentTweetsCount(TweetService service) {

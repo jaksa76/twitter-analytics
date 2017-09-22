@@ -42,7 +42,7 @@ public class Importer {
 
     private void bufferTweet(String[] parts) {
         try {
-            batch.add(new Tweet(getId(parts[1]), parts[3], parts[2], parseDate(parts[4])));
+            batch.add(new Tweet(getId(parts[1]), parts[3], parts[2], parseDate(parts[4]), 1.0f));
         } catch (ParseException e) {
             System.out.println(e.getMessage());
         } catch (NumberFormatException e) {

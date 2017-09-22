@@ -6,38 +6,35 @@
     <body>
         <h1>Twitter Analytics</h1>
 
-        results:
         <#list results as result>
             <h2>${result.query}</h2>
-            <div id="myDiv${result.query}" style="width: 900px; height: 300px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+            <div id="myDiv${result.query}" style="width: 900px; height: 300px;">
+                <!-- Plotly chart will be drawn inside this DIV -->
+            </div>
             <script>
 
-                var days = [<#list result.days?keys as date>"${date}",</#list>];
-                var goodTweets = [<#list result.days?keys as date>"${result.days[date].goodTweets}",</#list>];
-                var badTweets = [<#list result.days?keys as date>"${result.days[date].badTweets}",</#list>];
+                var dates = [<#list result.dates as date>"${date}",</#list>];
+                var goodTweets = [<#list result.goodTweets as t>"${t}",</#list>];
+                var badTweets = [<#list result.badTweets as t>"${t}",</#list>];
 
                 var data = [
                     {
-                        x: days,
+                        x: dates,
                         y: goodTweets,
                         name: 'positive',
                         type: 'bar'
                     },
                     {
-                        x: days,
+                        x: dates,
                         y: badTweets,
                         name: 'negative',
                         type: 'bar'
                     }
                 ];
 
-                Plotly.newPlot('myDiv${result.query}', data, { barmode: 'stack'});
+                Plotly.newPlot('myDiv${result.query}', data, { barmode: 'overlay'});
             </script>
         </#list>
-        <#list pending as query>
-            <h2>${query.keyword}...</h2>
-        </#list>
-
         schedule new query:
         <form action="/jobs/" method="post">
             <input type="text" name="keyword" autofocus="autofocus">

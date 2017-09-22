@@ -1,12 +1,17 @@
 package com.zuhlke.ta.prototype;
 
-import java.util.*;
+import com.zuhlke.ta.athena.AthenaTweetService;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public final class JobService extends Thread {
-    private final List<SentimentTimeline> results = Collections.synchronizedList(new ArrayList<>());
+    private final List<AthenaTweetService.TweetResult> results = Collections.synchronizedList(new ArrayList<>());
     private final BlockingQueue<Query> pendingQueries = new LinkedBlockingQueue<>();
     private TweetService tweetService;
 
@@ -23,7 +28,7 @@ public final class JobService extends Thread {
         }
     }
 
-    public List<SentimentTimeline> getResults() {
+    public List<AthenaTweetService.TweetResult> getResults() {
         System.out.println("getResults");
         return results;
     }

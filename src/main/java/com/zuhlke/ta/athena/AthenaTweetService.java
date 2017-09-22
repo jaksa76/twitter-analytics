@@ -1,17 +1,19 @@
 package com.zuhlke.ta.athena;
 
-import com.zuhlke.ta.prototype.*;
+import com.zuhlke.ta.prototype.Query;
+import com.zuhlke.ta.prototype.SentimentAnalyzer;
 import com.zuhlke.ta.prototype.SentimentTimeline.Day;
+import com.zuhlke.ta.prototype.Tweet;
+import com.zuhlke.ta.prototype.TweetService;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collector;
 
 import static java.util.stream.Collector.Characteristics.UNORDERED;
-import static java.util.stream.Collectors.groupingBy;
 
 public class AthenaTweetService implements TweetService {
 
@@ -28,19 +30,63 @@ public class AthenaTweetService implements TweetService {
     public void importTweets(Collection<Tweet> tweets) {
     }
 
+    public class TweetResult {
+        private final String query;
+        private final List<String> dates;
+        private final List<String> goodTweets;
+        private final List<String> badTweets;
+
+        TweetResult(String query, List<String> dates, List<String> goodTweets, List<String> badTweets) {
+            this.query = query;
+            this.dates = dates;
+            this.goodTweets = goodTweets;
+            this.badTweets = badTweets;
+        }
+
+        void append(NeoTweet neoTweet) {
+            dates.add(neoTweet.date);
+            goodTweets.add(neoTweet.positiveCount);
+            badTweets.add(neoTweet.negativeCount);
+        }
+
+        public String getQuery() {
+            return query;
+        }
+
+        public List<String> getDates() {
+            return dates;
+        }
+
+        public List<String> getGoodTweets() {
+            return goodTweets;
+        }
+
+        public List<String> getBadTweets() {
+            return badTweets;
+        }
+
+        @Override
+        public String toString() {
+            return "TweetResult{" +
+                "query='" + query + '\'' +
+                ", dates=" + dates +
+                ", goodTweets=" + goodTweets +
+                ", badTweets=" + badTweets +
+                '}';
+        }
+    }
+
     @Override
-    public SentimentTimeline analyzeSentimentOverTime(Query q) {
+    public TweetResult analyzeSentimentOverTime(Query q) {
         final String keyword = q.keyword.toLowerCase();
         final Tracer tracer = new Tracer(q.keyword);
+        List<NeoTweet> neoTweets = athenaJdbcClient.selectContentMatching(keyword);
 
-        final Map<String, Day> days = athenaJdbcClient.selectContentMatching(keyword)
-            .peek(tracer::increment)
-            .filter(t -> t.message.toLowerCase().contains(keyword))
-            .collect(groupingBy(t -> t.date.format(dateFormat), LinkedHashMap::new, toSentiment()));
+        TweetResult tweetResult = new TweetResult(q.getKeyword(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        neoTweets.forEach(tweetResult::append);
 
         tracer.summarise();
-
-        return new SentimentTimeline(q.keyword, days);
+        return tweetResult;
     }
 
     private Collector<Tweet, Day, Day> toSentiment() {

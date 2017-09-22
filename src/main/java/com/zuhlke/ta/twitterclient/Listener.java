@@ -27,7 +27,7 @@ public class Listener implements StatusListener {
                 status.getId(),
                 status.getUser().getScreenName(),
                 status.getText(),
-                tweetDate
+                tweetDate, 1.0f
         );
 
         System.out.print("+");
