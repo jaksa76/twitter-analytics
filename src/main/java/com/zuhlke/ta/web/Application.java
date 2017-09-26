@@ -20,16 +20,11 @@ import static spark.Spark.post;
 public class Application {
     public static void main(String[] args) throws IOException, URISyntaxException {
         SentimentAnalyzer sentimentAnalyzer = new TwitterSentimentAnalyzerImpl();
-        //TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
-//        TweetService tweetService = new MapDBTweetService(sentimentAnalyzer);
         TweetService tweetService = new BigQueryTweetService();
         JobService jobService = new JobService(tweetService);
-        //Importer importer = new Importer(tweetService);
-        //importer.importTweetsFrom(new File("test_set_tweets.txt"));
 
         FreeMarkerEngine freeMarker = new FreeMarkerEngine();
 
-//        staticFiles.location("/spark/template/freemarker");
         get("/", (req, resp) -> homepageData(jobService), freeMarker);
         get("/results/", (req, resp) -> jobService.getResults());
         get("/pending/", (req, resp) -> jobService.getPending());
