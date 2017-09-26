@@ -1,0 +1,5 @@
+Build (from root directory):
+docker build -f docker/master.Dockerfile -t [repositoryUrl]/[projectId]/[imageName]:[tag] .
+
+Push to GCR
+gcloud docker -- push [repositoryUrl]/[projectId]/[imageName]:[tag]

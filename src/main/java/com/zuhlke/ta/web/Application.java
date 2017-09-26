@@ -19,7 +19,6 @@ import static spark.Spark.post;
 
 public class Application {
     public static void main(String[] args) throws IOException, URISyntaxException {
-        SentimentAnalyzer sentimentAnalyzer = new TwitterSentimentAnalyzerImpl();
         TweetService tweetService = new BigQueryTweetService();
         JobService jobService = new JobService(tweetService);
 
@@ -29,8 +28,6 @@ public class Application {
         get("/results/", (req, resp) -> jobService.getResults());
         get("/pending/", (req, resp) -> jobService.getPending());
         post("/jobs/", (req, resp) -> enqueueJob(jobService, req, resp));
-
-        //TwitterClientRunner.runClient(tweetService);
     }
 
     private static ModelAndView homepageData(JobService jobService) {
