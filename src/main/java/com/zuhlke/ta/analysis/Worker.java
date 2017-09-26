@@ -26,6 +26,8 @@ public class Worker {
         // get partitions from master and analyze them
         Integer partitionId = -1;
 
+        client.connectToMaster();
+
         do {
             partitionId = client.getNextPartitionId();
 
