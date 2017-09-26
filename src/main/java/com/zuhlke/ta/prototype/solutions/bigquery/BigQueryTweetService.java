@@ -18,12 +18,16 @@ import java.util.concurrent.TimeoutException;
 public class BigQueryTweetService implements TweetService {
 
     private BigQuery bigQuery;
+    private Properties props;
 
-    public BigQueryTweetService() {
-        File credentialsPath = new File("service-account.json");
+    public BigQueryTweetService() throws IOException {
+        props = new Properties();
+        props.load(BigQueryTweetService.class.getClassLoader().getResourceAsStream("bigquery.properties"));
+
+        File credentialsPath = new File(props.getProperty("serviceAccountCredFile"));
         try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
             ServiceAccountCredentials credentials = ServiceAccountCredentials.fromStream(serviceAccountStream);
-            this.bigQuery = BigQueryOptions.newBuilder().setProjectId("apt-sentinel-180609").setCredentials(credentials).build().getService();
+            this.bigQuery = BigQueryOptions.newBuilder().setProjectId(props.getProperty("projectId")).setCredentials(credentials).build().getService();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
