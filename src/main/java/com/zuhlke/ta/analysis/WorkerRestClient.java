@@ -22,6 +22,7 @@ public class WorkerRestClient implements WorkerClient {
     public void connectToMaster() throws InterruptedException {
         boolean connected = false;
         String url = masterUrl + "/status";
+        Integer retryPeriod = 5;
         HttpGet request = new HttpGet(url);
 
         while(!connected) {
@@ -36,8 +37,8 @@ public class WorkerRestClient implements WorkerClient {
                     System.out.println("connected");
                 }
             } catch (Exception ex) {
-                System.out.println("failed, retrying in 10s");
-                Thread.sleep(10 * 1000);
+                System.out.println("failed, retrying in " + retryPeriod + "s");
+                Thread.sleep(retryPeriod * 1000);
             }
         }
     }

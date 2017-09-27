@@ -13,4 +13,7 @@ spec:
       - name: worker
         image: eu.gcr.io/apt-sentinel-180609/ta-worker:v1
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 950m
 ---

@@ -39,8 +39,7 @@ public class Worker {
         QueryJobConfiguration queryConfig = QueryJobConfiguration
                 .newBuilder("SELECT content, timestamp" +
                         "          FROM " + srcDataset + "." + srcTable +
-                        "         WHERE MOD(tweetId, 1000) = " + partitionId +
-                        "         LIMIT 10000"
+                        "         WHERE MOD(tweetId, 1000) = " + partitionId
                 )
                 .setUseLegacySql(false)
                 .build();

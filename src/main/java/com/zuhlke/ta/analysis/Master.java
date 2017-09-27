@@ -11,9 +11,9 @@ public class Master {
     }
 
     Master() {
-        this.client = new MasterRestClient();
-        this.client.registerPartitionHandler(this::getPartition);
-        this.client.registerStatusHandler(this::getStatus);
+        client = new MasterRestClient();
+        client.registerPartitionHandler(this::getPartition);
+        client.registerStatusHandler(this::getStatus);
     }
 
     private String getStatus() {
