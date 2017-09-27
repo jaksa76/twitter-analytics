@@ -122,6 +122,13 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<finalName>twitter-analytics</finalName>
+					<appendAssemblyId>false</appendAssemblyId>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
 				<executions>
 					<execution>
 						<id>web-app</id>
@@ -131,11 +138,7 @@
 									<mainClass>com.zuhlke.ta.web.Application</mainClass>
 								</manifest>
 							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
                             <finalName>web-app</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 						<phase>package</phase> <!-- packaging phase -->
 						<goals>
@@ -150,11 +153,7 @@
 									<mainClass>com.zuhlke.ta.analysis.Master</mainClass>
 								</manifest>
 							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
                             <finalName>master</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 						<phase>package</phase> <!-- packaging phase -->
 						<goals>
@@ -169,11 +168,7 @@
 									<mainClass>com.zuhlke.ta.analysis.Worker</mainClass>
 								</manifest>
 							</archive>
-							<descriptorRefs>
-								<descriptorRef>jar-with-dependencies</descriptorRef>
-							</descriptorRefs>
                             <finalName>worker</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
 						</configuration>
 						<phase>package</phase> <!-- packaging phase -->
 						<goals>
