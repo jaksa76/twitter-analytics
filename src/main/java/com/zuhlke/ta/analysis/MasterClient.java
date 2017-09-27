@@ -1,11 +1,9 @@
 package com.zuhlke.ta.analysis;
 
-public class MasterClient {
-    public void registerPartitionHandler(Runnable function) {
-        function.run();
-    }
+import java.util.concurrent.Callable;
 
-    public void registerStatusHandler(Runnable function) {
-        function.run();
-    }
+public interface MasterClient {
+    void registerPartitionHandler(Callable<Object> callback);
+
+    void registerStatusHandler(Callable<Object> callback);
 }

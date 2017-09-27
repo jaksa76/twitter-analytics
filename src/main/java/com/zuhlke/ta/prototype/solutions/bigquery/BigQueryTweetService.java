@@ -22,7 +22,7 @@ public class BigQueryTweetService implements TweetService {
 
     public BigQueryTweetService() throws IOException {
         props = new Properties();
-        props.load(BigQueryTweetService.class.getClassLoader().getResourceAsStream("bigquery.properties"));
+        props.load(BigQueryTweetService.class.getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
 
         File credentialsPath = new File(props.getProperty("serviceAccountCredFile"));
         try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {

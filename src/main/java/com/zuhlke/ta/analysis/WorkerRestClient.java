@@ -11,10 +11,11 @@ import java.io.InputStreamReader;
 
 public class WorkerRestClient implements WorkerClient {
     private HttpClient client;
-    private final String masterUrl = "http://localhost:4567";
+    private String masterUrl;
 
-    WorkerRestClient() {
-        this.client = new DefaultHttpClient();
+    WorkerRestClient() throws IOException {
+        client = new DefaultHttpClient();
+        masterUrl = new ConfigurationLoader().getConfigItem("masterUrl");
     }
 
     @Override
@@ -26,7 +27,7 @@ public class WorkerRestClient implements WorkerClient {
         while(!connected) {
             try {
                 System.out.print("Connecting to master at " + masterUrl + "... ");
-                HttpResponse response = this.client.execute(request);
+                HttpResponse response = client.execute(request);
                 if (response.getStatusLine().getStatusCode() == 200) {
                     // don't need the response at the moment, but read it to the end to make sure the
                     // connection is closed

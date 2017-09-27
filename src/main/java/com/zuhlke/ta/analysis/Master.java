@@ -11,16 +11,16 @@ public class Master {
     }
 
     Master() {
-        this.client = new MasterClient();
-        this.client.registerPartitionHandler(() -> {
-            Spark.get("/nextPartitionId", (req, resp) -> this.getPartition());
-        });
-        this.client.registerStatusHandler(() -> {
-            Spark.get("/status", (req, resp) -> "OK");
-        });
+        this.client = new MasterRestClient();
+        this.client.registerPartitionHandler(this::getPartition);
+        this.client.registerStatusHandler(this::getStatus);
     }
 
-    synchronized Integer getPartition() {
+    private String getStatus() {
+        return "OK";
+    }
+
+    private synchronized Integer getPartition() {
         if (nextPartitionId == 1000) return -1;
         return nextPartitionId++;
     }

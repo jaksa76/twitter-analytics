@@ -12,7 +12,7 @@ import java.util.Properties;
 public class TwitterClientRunner {
     public static void runClient(TweetService tweetService) throws IOException {
         Properties props = new Properties();
-        props.load(TwitterClientRunner.class.getClassLoader().getResourceAsStream("config.properties"));
+        props.load(TwitterClientRunner.class.getClassLoader().getResourceAsStream("configuration/config.properties"));
 
         LocationBounds bounds = new LocationBounds(
                 Double.parseDouble(props.getProperty("boundsLatitudeMin")),
