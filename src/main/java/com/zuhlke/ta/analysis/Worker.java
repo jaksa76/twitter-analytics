@@ -14,7 +14,6 @@ import java.util.concurrent.TimeoutException;
 public class Worker {
     private BigQuery bigQuery;
     private SentimentAnalyzer analyzer;
-    private WorkerClient client;
     private Properties props;
 
     public static void main(String[] args) throws Exception {
@@ -26,7 +25,6 @@ public class Worker {
         props = new Properties();
         props.load(Worker.class.getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
         analyzer = new SentimentAnalyzerImpl();
-        client = new WorkerRestClient();
 
         File credentialsPath = new File(props.getProperty("serviceAccountCredFile"));
         try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
@@ -87,22 +85,6 @@ public class Worker {
     }
 
     private void work() throws Exception {
-        // get partitions from master and analyze them
-        Integer partitionId = -1;
-
-        client.connectToMaster();
-
-        do {
-            partitionId = client.getNextPartitionId();
-
-            if (partitionId != -1) {
-                analyse(
-                        partitionId,
-                        props.getProperty("inputTweetsDataset"),
-                        props.getProperty("inputTweetsTable"),
-                        props.getProperty("analysedTweetsDataset"),
-                        props.getProperty("analysedTweetsTable"));
-            }
-        } while (partitionId != -1);
+        // TODO: get partition ID(s) from master and run them through the analyse method
     }
 }
