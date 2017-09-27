@@ -1,9 +1,0 @@
-Build (from root directory):
-docker build -f docker/master.Dockerfile -t [repositoryUrl]/[projectId]/ta-master:[tag] .
-docker build -f docker/web-app.Dockerfile -t [repositoryUrl]/[projectId]/ta-web-app:[tag] .
-docker build -f docker/worker.Dockerfile -t [repositoryUrl]/[projectId]/ta-worker:[tag] .
-
-Push to GCR
-gcloud docker -- push [repositoryUrl]/[projectId]/ta-master:[tag]
-gcloud docker -- push [repositoryUrl]/[projectId]/ta-web-app:[tag]
-gcloud docker -- push [repositoryUrl]/[projectId]/ta-worker:[tag]
