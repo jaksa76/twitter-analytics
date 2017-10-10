@@ -1,0 +1,7 @@
+FROM openjdk:8
+RUN mkdir -p /opt/worker
+COPY ./target/worker.jar /opt/worker/
+COPY ./service-account.json /opt/worker/
+WORKDIR /opt/worker
+ENV ENV=production
+CMD java -jar worker.jar
