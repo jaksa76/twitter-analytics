@@ -9,10 +9,7 @@ TODO:
 * create a BigQuery dataset
 
 * copy the tweet data from Google Storage to a BigQuery table using a variation of the following command:
-bq load --max_bad_records=1000 --source_format=CSV --quote=“” -F “|” --replace --allow_jagged_rows [yourDataset].[yourTable]
-gs://intalert-tweets/csv/tweets_dedup/part-*-of-00035 key:STRING,tweetId:INTEGER,content:STRING,user:STRING,
-timestamp:TIMESTAMP,longitude:FLOAT,latitude:FLOAT,geoLocated:BOOLEAN,language:STRING,place:STRING,favourites:INTEGER,
-sentiment:FLOAT
+bq load --max_bad_records=1000 --source_format=CSV --quote=“” -F “|” --replace --allow_jagged_rows [yourDataset].[yourTable] gs://intalert-tweets/csv/tweets_dedup/part-*-of-00035 key:STRING,tweetId:INTEGER,content:STRING,user:STRING, timestamp:TIMESTAMP,longitude:FLOAT,latitude:FLOAT,geoLocated:BOOLEAN,language:STRING,place:STRING,favourites:INTEGER, sentiment:FLOAT
 
 * create an "analysed" table
 

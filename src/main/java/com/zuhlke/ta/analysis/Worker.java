@@ -6,6 +6,7 @@ import com.google.common.base.Stopwatch;
 import com.zuhlke.ta.prototype.SentimentAnalyzer;
 import com.zuhlke.ta.sentiment.SentimentAnalyzerImpl;
 
+import javax.ws.rs.client.ClientBuilder;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -86,5 +87,19 @@ public class Worker {
 
     private void work() throws Exception {
         // TODO: get partition ID(s) from master and run them through the analyse method
+        int partition = getPartition();
+        while (partition != -1) {
+            analyze(partition);
+            partition = getPartition();
+        }
+    }
+
+    private void analyze(int partition) throws TimeoutException, InterruptedException, IOException {
+        analyse(partition, props.getProperty("inputTweetsDataset"), props.getProperty("inputTweetsTable"), props.getProperty("analysedTweetsDataset"), props.getProperty("analysedTweetsTable"));
+    }
+
+    public int getPartition() {
+        String masterUrl = "http://localhost:4567/partition";
+        return Integer.parseInt(ClientBuilder.newClient().target(masterUrl).request().get(String.class));
     }
 }
