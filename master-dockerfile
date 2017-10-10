@@ -1,4 +1,4 @@
-FROM ibmjava/8-jre-alpine
+FROM openjdk:8u131-jre-alpine
 WORKDIR /
 ADD target/master.jar master.jar
 CMD java -jar master.jar
