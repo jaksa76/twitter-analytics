@@ -14,24 +14,24 @@
 
                 var days = [<#list result.days?keys as date>"${date}",</#list>];
                 var goodTweets = [<#list result.days?keys as date>"${result.days[date].goodTweets}",</#list>];
-                var badTweets = [<#list result.days?keys as date>"${result.days[date].badTweets}",</#list>];
+                var badTweets = [<#list result.days?keys as date>"-${result.days[date].badTweets}",</#list>];
 
                 var data = [
-                    {
-                        x: days,
-                        y: goodTweets,
-                        name: 'positive',
-                        type: 'bar'
-                    },
                     {
                         x: days,
                         y: badTweets,
                         name: 'negative',
                         type: 'bar'
+                    },
+                    {
+                        x: days,
+                        y: goodTweets,
+                        name: 'positive',
+                        type: 'bar'
                     }
                 ];
 
-                Plotly.newPlot('myDiv${result.query}', data, { barmode: 'stack'});
+                Plotly.newPlot('myDiv${result.query}', data, { barmode: 'overlay'});
             </script>
         </#list>
         <#list pending as query>
