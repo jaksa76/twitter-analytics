@@ -56,7 +56,7 @@ public class BigQueryTweetService implements TweetService {
         QueryJobConfiguration queryConfig = QueryJobConfiguration
                 .newBuilder("SELECT DATE(timestamp) AS date," +
                         "                 COUNT(*) AS count\n" +
-                        "          FROM intalert.all\n" +
+                        "          FROM intalert.tweets\n" +
                         "         WHERE LOWER(content) LIKE @keyword\n" +
                         "           AND sentiment " + (positiveSentiment ? ">" : "<") + " 0.0\n" +
                         "        GROUP BY date" +
