@@ -8,15 +8,14 @@ import com.zuhlke.ta.prototype.SentimentTimeline.Day;
 import com.zuhlke.ta.prototype.Tweet;
 import com.zuhlke.ta.prototype.TweetService;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 public class BigQueryTweetService implements TweetService {
 
+    private final String inputTweetsDataset;
+    private final String inputTweetsTable;
     private BigQuery bigQuery;
     private Properties props;
 
@@ -24,15 +23,17 @@ public class BigQueryTweetService implements TweetService {
         props = new Properties();
         props.load(BigQueryTweetService.class.getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
 
-        File credentialsPath = new File(props.getProperty("serviceAccountCredFile"));
-        try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
+        final String serviceAccountCredFile = props.getProperty("serviceAccountCredFile");
+        //File credentialsPath = new File(serviceAccountCredFile);
+        final InputStream serviceAccountStream = BigQueryTweetService.class.getClassLoader().getResourceAsStream(serviceAccountCredFile);
+        try {
             ServiceAccountCredentials credentials = ServiceAccountCredentials.fromStream(serviceAccountStream);
             this.bigQuery = BigQueryOptions.newBuilder().setProjectId(props.getProperty("projectId")).setCredentials(credentials).build().getService();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        inputTweetsDataset = this.props.getProperty("inputTweetsDataset");
+        inputTweetsTable = this.props.getProperty("inputTweetsTable");
     }
 
     @Override
@@ -54,13 +55,12 @@ public class BigQueryTweetService implements TweetService {
     private Map<String, Integer> executeQuery(boolean positiveSentiment, String keyword) throws InterruptedException, TimeoutException {
         Map<String, Integer> sentimentByDay = new LinkedHashMap<>();
         QueryJobConfiguration queryConfig = QueryJobConfiguration
-                .newBuilder("SELECT DATE(timestamp) AS date," +
-                        "                 COUNT(*) AS count\n" +
-                        "          FROM intalert.all\n" +
-                        "         WHERE LOWER(content) LIKE @keyword\n" +
-                        "           AND sentiment " + (positiveSentiment ? ">" : "<") + " 0.0\n" +
-                        "        GROUP BY date" +
-                        "        ORDER BY date")
+                .newBuilder("SELECT DATE(timestamp) AS date, COUNT(*) AS count\n" +
+                        "FROM " + inputTweetsDataset + "." + inputTweetsTable + "\n" +
+                        "WHERE LOWER(content) LIKE @keyword\n" +
+                        "AND sentiment " + (positiveSentiment ? ">" : "<") + " 0.0\n" +
+                        "GROUP BY date\n" +
+                        "ORDER BY date")
                 .setUseLegacySql(false)
                 .addNamedParameter("keyword", QueryParameterValue.string("%" + keyword.toLowerCase() + "%"))
                 .build();
