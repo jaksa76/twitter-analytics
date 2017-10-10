@@ -1,0 +1,4 @@
+FROM ibmjava/8-jre-alpine
+WORKDIR /
+ADD target/worker.jar worker.jar
+CMD java -jar worker.jar
