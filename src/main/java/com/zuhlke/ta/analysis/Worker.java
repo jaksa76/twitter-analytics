@@ -1,5 +1,7 @@
 package com.zuhlke.ta.analysis;
 
+import com.google.auth.Credentials;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.bigquery.*;
 import com.google.common.base.Stopwatch;
@@ -30,6 +32,9 @@ public class Worker {
         File credentialsPath = new File(props.getProperty("serviceAccountCredFile"));
         try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
             ServiceAccountCredentials credentials = ServiceAccountCredentials.fromStream(serviceAccountStream);
+            this.bigQuery = BigQueryOptions.newBuilder().setProjectId(props.getProperty("projectId")).setCredentials(credentials).build().getService();
+        } catch (FileNotFoundException e) {
+            Credentials credentials = GoogleCredentials.getApplicationDefault();
             this.bigQuery = BigQueryOptions.newBuilder().setProjectId(props.getProperty("projectId")).setCredentials(credentials).build().getService();
         }
     }
