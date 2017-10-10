@@ -10,6 +10,6 @@ import static org.junit.Assert.*;
 public class WorkerTest {
     @Test
     public void analysePartition() throws Exception {
-        new Worker().analyse(0, "intalert", "test", "intalert","analysed");
+        new Worker().analyse(0, "the_twit_budapest", "test_tweets", "the_twit_budapest","cooked_tweets");
     }
 }
