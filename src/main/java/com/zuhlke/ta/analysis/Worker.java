@@ -75,18 +75,27 @@ public class Worker {
                     fields.put("timestamp", timestamp);
                     fields.put("sentiment", sentiment);
                     rows.add(InsertAllRequest.RowToInsert.of(fields));
-                }
-                InsertAllResponse insertAllResponse = bigQuery.insertAll(InsertAllRequest.of(TableId.of(destDataset, destTable), rows));
 
-                if (insertAllResponse.hasErrors()) {
-                    System.out.println(insertAllResponse.getInsertErrors());
+                    if (rows.size() == 10) {
+                        insert(destDataset, destTable, rows);
+                        rows.clear();
+                    }
+
                 }
+                insert(destDataset, destTable, rows);
 
                 result = result.getNextPage();
             }
 
             stopwatch.stop();
             System.out.println("done (" + stopwatch.elapsed(TimeUnit.MILLISECONDS) + " ms)");
+        }
+    }
+
+    private void insert(String destDataset, String destTable, List<InsertAllRequest.RowToInsert> rows) {
+        InsertAllResponse insertAllResponse = bigQuery.insertAll(InsertAllRequest.of(TableId.of(destDataset, destTable), rows));
+        if (insertAllResponse.hasErrors()) {
+            System.out.println(insertAllResponse.getInsertErrors());
         }
     }
 
