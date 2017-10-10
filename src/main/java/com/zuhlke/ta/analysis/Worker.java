@@ -6,7 +6,8 @@ import com.google.common.base.Stopwatch;
 import com.zuhlke.ta.prototype.SentimentAnalyzer;
 import com.zuhlke.ta.sentiment.SentimentAnalyzerImpl;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -28,10 +29,13 @@ public class Worker {
         analyzer = new SentimentAnalyzerImpl();
         client = new WorkerRestClient();
 
-        File credentialsPath = new File(props.getProperty("serviceAccountCredFile"));
-        try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
+        String credentialsPath = props.getProperty("serviceAccountCredFile");
+        final InputStream serviceAccountStream = Worker.class.getClassLoader().getResourceAsStream(credentialsPath);
+        try {
             ServiceAccountCredentials credentials = ServiceAccountCredentials.fromStream(serviceAccountStream);
             this.bigQuery = BigQueryOptions.newBuilder().setProjectId(props.getProperty("projectId")).setCredentials(credentials).build().getService();
+        } finally {
+            serviceAccountStream.close();
         }
     }
 
