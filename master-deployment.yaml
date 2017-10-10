@@ -1,0 +1,30 @@
+apiVersion: apps/v1beta1 # for versions before 1.7.0 use apps/v1beta1
+kind: Deployment
+metadata:
+  name: master-deployment
+  labels:
+    app: master
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: master
+    spec:
+      containers:
+      - name: master-service
+        image: eu.gcr.io/genuine-axe-182507/master:master-service
+        ports:
+        - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: master-service
+spec:
+  selector:
+    app: master
+  ports:
+  - protocol: TCP
+    port: 4567
+    targetPort: 4567
