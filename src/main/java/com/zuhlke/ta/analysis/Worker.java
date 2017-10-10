@@ -104,7 +104,7 @@ public class Worker {
     }
 
     public int getPartition() {
-        String masterUrl = "http://localhost:4567/partition";
+        String masterUrl = "http://master:4567/partition";
         return Integer.parseInt(ClientBuilder.newClient().target(masterUrl).request().get(String.class));
     }
 }
