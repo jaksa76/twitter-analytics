@@ -3,7 +3,7 @@ pipeline {
     environment {
         BUILD_NO = "${BUILD_NUMBER}"
         KUBE_OUTPUT = sh (
-            script: '/usr/share/google-cloud-sdk/bin/kubectl get deployments master-deploymentsasdf',
+            script: '/usr/share/google-cloud-sdk/bin/kubectl get deployments master-deploymentsasdf 2>&1',
             returnStdout: true
         ).trim()
     }
