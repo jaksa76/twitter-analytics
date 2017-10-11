@@ -55,29 +55,30 @@ public class Worker {
             QueryResult result = response.getResult();
 
             System.out.println(result.getTotalRows() + " tweets");
-            System.out.print("Analysing... ");
+            System.out.println("Analysing... ");
             Stopwatch stopwatch = Stopwatch.createStarted();
 
             while (result != null) {
-                List<InsertAllRequest.RowToInsert> rows = new ArrayList<>();
                 for (List<FieldValue> row : result.iterateAll()) {
                     String content = row.get(0).getStringValue();
                     String timestamp = row.get(1).getStringValue();
 
+                    System.out.println("Analysing tweet...");
                     double sentiment = analyzer.getSentiment(content);
 
                     Map<String, Object> fields = new HashMap<>();
                     fields.put("content", content);
                     fields.put("timestamp", timestamp);
                     fields.put("sentiment", sentiment);
+                    List<InsertAllRequest.RowToInsert> rows = new ArrayList<>();
                     rows.add(InsertAllRequest.RowToInsert.of(fields));
+                    System.out.println("Inserting tweet...");
+                    InsertAllResponse insertAllResponse = bigQuery.insertAll(InsertAllRequest.of(TableId.of(destDataset, destTable), rows));
+                    System.out.println("Tweet inserted!");
+                    if (insertAllResponse.hasErrors()) {
+                        System.out.println(insertAllResponse.getInsertErrors());
+                    }
                 }
-                InsertAllResponse insertAllResponse = bigQuery.insertAll(InsertAllRequest.of(TableId.of(destDataset, destTable), rows));
-
-                if (insertAllResponse.hasErrors()) {
-                    System.out.println(insertAllResponse.getInsertErrors());
-                }
-
                 result = result.getNextPage();
             }
 
