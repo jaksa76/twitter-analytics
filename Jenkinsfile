@@ -29,7 +29,7 @@ pipeline {
         }
         stage('Docker Create Deployment') {
             when {
-                KUBE_OUTPUT.isEmpty() true
+                expression {KUBE_OUTPUT.isEmpty()}
             }
             steps {
                 echo "Kubeoutput : ${KUBE_OUTPUT}"
