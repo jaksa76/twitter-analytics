@@ -2,21 +2,24 @@ pipeline {
     agent any
     environment {
         BUILD_NO = "${BUILD_NUMBER}"
+        KUBE_OUTPUT = false
     }
     stages {
         stage('Setup') {
-            KUBE_OUTPUT = false
-            try {
-                sh '/usr/share/google-cloud-sdk/bin/kubectl get deployments master-deploymentsasdf'
-            }
-            catch (exc) {
-                KUBE_OUTPUT = true
+            steps {
+                try {
+                    sh '/usr/share/google-cloud-sdk/bin/kubectl get deployments master-deploymentsasdf'
+                }
+                catch (exc) {
+                    KUBE_OUTPUT = true
+                }
             }
         }
         stage('Build') {
             steps {
                 sh 'cp /usr/share/service-account.json ./service-account.json'
-                sh 'mvn package'            }
+                sh 'mvn package'
+                }
         }
         stage('Docker Compose') {
             steps {
