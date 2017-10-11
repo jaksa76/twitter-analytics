@@ -7,27 +7,37 @@ import com.google.cloud.bigquery.*;
 import com.google.common.base.Stopwatch;
 import com.zuhlke.ta.prototype.SentimentAnalyzer;
 import com.zuhlke.ta.sentiment.SentimentAnalyzerImpl;
+import org.jgroups.ChannelListener;
+import org.jgroups.JChannel;
+import org.jgroups.Message;
+import org.jgroups.ReceiverAdapter;
 
-import javax.ws.rs.client.ClientBuilder;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class Worker {
+public class Worker extends ReceiverAdapter implements ChannelListener {
     private BigQuery bigQuery;
     private SentimentAnalyzer analyzer;
     private Properties props;
+    private JChannel channel;
 
     public static void main(String[] args) throws Exception {
         Worker worker = new Worker();
         worker.work();
     }
 
-    public Worker() throws IOException {
+    public Worker() throws Exception {
         props = new Properties();
         props.load(Worker.class.getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
         analyzer = new SentimentAnalyzerImpl();
+        channel = new JChannel("udp.xml");
+        channel.setReceiver(this).addChannelListener(this);
+        channel.connect("analysis");
 
         File credentialsPath = new File(props.getProperty("serviceAccountCredFile"));
         try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
@@ -39,11 +49,11 @@ public class Worker {
         }
     }
 
-    public void analyse(int partitionId, String srcDataset, String srcTable, String destDataset, String destTable) throws TimeoutException, InterruptedException, IOException {
+    void analyse(int partitionId, String srcDataset, String srcTable, String destDataset, String destTable) throws TimeoutException, InterruptedException, IOException {
         QueryJobConfiguration queryConfig = QueryJobConfiguration
                 .newBuilder("SELECT content, timestamp" +
                         "          FROM " + srcDataset + "." + srcTable +
-                        "         WHERE MOD(tweetId, 1000) = " + partitionId
+                        "         WHERE MOD(tweetId, 10000) = " + partitionId
                 )
                 .setUseLegacySql(false)
                 .build();
@@ -76,7 +86,7 @@ public class Worker {
                     fields.put("sentiment", sentiment);
                     rows.add(InsertAllRequest.RowToInsert.of(fields));
 
-                    if (rows.size() == 10) {
+                    if (rows.size() == 100) {
                         insert(destDataset, destTable, rows);
                         rows.clear();
                     }
@@ -93,6 +103,7 @@ public class Worker {
     }
 
     private void insert(String destDataset, String destTable, List<InsertAllRequest.RowToInsert> rows) {
+        if (rows.isEmpty()) return;
         InsertAllResponse insertAllResponse = bigQuery.insertAll(InsertAllRequest.of(TableId.of(destDataset, destTable), rows));
         if (insertAllResponse.hasErrors()) {
             System.out.println(insertAllResponse.getInsertErrors());
@@ -100,20 +111,48 @@ public class Worker {
     }
 
     private void work() throws Exception {
-        // TODO: get partition ID(s) from master and run them through the analyse method
-        int partition = getPartition();
-        while (partition != -1) {
-            analyze(partition);
-            partition = getPartition();
-        }
+        requestNextPartition();
     }
 
-    private void analyze(int partition) throws TimeoutException, InterruptedException, IOException {
+    private JChannel requestNextPartition() throws Exception {
+        System.out.println("requesting partition");
+        return channel.send(new Message(null, new PartitionRequest()));
+    }
+
+    private void printMembers() {
+        channel.getView().getMembers().forEach(m -> System.out.println(m));
+    }
+
+    private void analyse(int partition) throws TimeoutException, InterruptedException, IOException {
         analyse(partition, props.getProperty("inputTweetsDataset"), props.getProperty("inputTweetsTable"), props.getProperty("analysedTweetsDataset"), props.getProperty("analysedTweetsTable"));
     }
 
-    public int getPartition() {
-        String masterUrl = "http://master:4567/partition";
-        return Integer.parseInt(ClientBuilder.newClient().target(masterUrl).request().get(String.class));
+    @Override
+    public void receive(Message message) {
+        System.out.println("Worker.receive");
+        if (message.getObject() instanceof TablePartition) {
+            TablePartition partition = message.getObject();
+            try {
+                analyse(partition.getPartition());
+                requestNextPartition();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void channelConnected(JChannel channel) {
+        System.out.println("Worker.channelConnected");
+    }
+
+    @Override
+    public void channelDisconnected(JChannel channel) {
+        System.out.println("Worker.channelDisconnected");
+    }
+
+    @Override
+    public void channelClosed(JChannel channel) {
+        System.out.println("Worker.channelClosed");
     }
 }
