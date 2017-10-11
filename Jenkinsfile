@@ -7,11 +7,13 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                try {
-                    sh '/usr/share/google-cloud-sdk/bin/kubectl get deployments master-deploymentsasdf'
-                }
-                catch (exc) {
-                    KUBE_OUTPUT = true
+                step {
+                    try {
+                        sh '/usr/share/google-cloud-sdk/bin/kubectl get deployments master-deploymentsasdf'
+                    }
+                    catch (exc) {
+                        KUBE_OUTPUT = true
+                    }
                 }
             }
         }
@@ -19,7 +21,7 @@ pipeline {
             steps {
                 sh 'cp /usr/share/service-account.json ./service-account.json'
                 sh 'mvn package'
-                }
+            }
         }
         stage('Docker Compose') {
             steps {
