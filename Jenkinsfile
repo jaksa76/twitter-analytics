@@ -9,6 +9,9 @@ pipeline {
                 sh 'docker tag web-app:twitter-web-app eu.gcr.io/genuine-axe-182507/web-app:twitter-web-app'
                 sh 'docker tag master:master-service eu.gcr.io/genuine-axe-182507/master:master-service'
                 sh 'docker tag worker:twitter-worker eu.gcr.io/genuine-axe-182507/worker:twitter-worker'
+                sh '/usr/share/google-cloud-sdk/bin/gcloud docker -- push eu.gcr.io/genuine-axe-182507/web-app:twitter-web-app'
+                sh '/usr/share/google-cloud-sdk/bin/gcloud docker -- push eu.gcr.io/genuine-axe-182507/master:master-service'
+                sh '/usr/share/google-cloud-sdk/bin/gcloud docker -- push eu.gcr.io/genuine-axe-182507/worker:twitter-worker'
             }
         }
     }
