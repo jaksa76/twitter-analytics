@@ -7,9 +7,10 @@ RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 
 # Install packages
 RUN apt-get update \
-    && apt-get install -y docker python-pip google-cloud-sdk \
+    && apt-get install -y docker python-pip google-cloud-sdk kubectl \
     && pip install docker-compose
 
 COPY service-account.json /usr/share/service-account.json
 
 RUN gcloud auth activate-service-account --key-file /usr/share/service-account.json
+RUN gcloud container clusters get-credentials ta-cluster --zone europe-west3-a --project apt-sentinel-180609
