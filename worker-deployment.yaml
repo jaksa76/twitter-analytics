@@ -17,5 +17,6 @@ spec:
       containers:
       - name: worker
         image: eu.gcr.io/genuine-axe-182507/worker:twitter-worker
+        imagePullPolicy: Always
         ports:
         - containerPort: 80

@@ -55,7 +55,7 @@ public class Worker {
             QueryResult result = response.getResult();
 
             System.out.println(result.getTotalRows() + " tweets");
-            System.out.print("Analysing... ");
+            System.out.println("Analysing... ");
             Stopwatch stopwatch = Stopwatch.createStarted();
 
             while (result != null) {
@@ -71,6 +71,7 @@ public class Worker {
                     fields.put("timestamp", timestamp);
                     fields.put("sentiment", sentiment);
                     rows.add(InsertAllRequest.RowToInsert.of(fields));
+                    System.out.println("Processed content '" + content + "'");
                 }
                 InsertAllResponse insertAllResponse = bigQuery.insertAll(InsertAllRequest.of(TableId.of(destDataset, destTable), rows));
 
