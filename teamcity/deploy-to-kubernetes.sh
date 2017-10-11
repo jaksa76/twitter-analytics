@@ -6,7 +6,7 @@ version=$1
 if [[ -z `kubectl get deployments 2>&1 | grep master-deployment` ]];
 then
     echo Creating master deployment
-    sed -i 's/%VERSION%/$version/' ./kubernetes/cluster-master-config.yml
+    sed -i "s/%VERSION%/$version/" ./kubernetes/cluster-master-config.yml
     kubectl create -f ./kubernetes/cluster-master-config.yml
 else
     echo Updating master deployment to version $version
@@ -16,7 +16,7 @@ fi
 if [[ -z `kubectl get deployments 2>&1 | grep worker-deployment` ]];
 then
     echo Creating worker deployment
-    sed -i 's/%VERSION%/$version/' ./kubernetes/cluster-worker-config.yml
+    sed -i "s/%VERSION%/$version/" ./kubernetes/cluster-worker-config.yml
     kubectl create -f ./kubernetes/cluster-worker-config.yml
 else
     echo Updating worker deployment to version $version
@@ -26,7 +26,7 @@ fi
 if [[ -z `kubectl get deployments 2>&1 | grep web-app-deployment` ]];
 then
     echo Creating worker deployment
-    sed -i 's/%VERSION%/$version/' ./kubernetes/cluster-web-app-config.yml
+    sed -i "s/%VERSION%/$version/" ./kubernetes/cluster-web-app-config.yml
     kubectl create -f ./kubernetes/cluster-web-app-config.yml
 else
     echo Updating worker deployment to version $version
