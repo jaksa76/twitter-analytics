@@ -9,12 +9,13 @@ services:
     - tc-server-logs:/opt/teamcity/logs
   tc-agent:
     build:
-      context: .
-      dockerfile: agent.dockerfile
+      context: ..
+      dockerfile: ./teamcity/agent.dockerfile
     environment:
     - SERVER_URL=http://tc-server:8111
     volumes:
     - tc-agent-data:/data/teamcity_agent/conf
+    - /var/run/docker.sock:/var/run/docker.sock
 volumes:
   tc-server-data:
   tc-server-logs:
