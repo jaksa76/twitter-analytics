@@ -4,14 +4,14 @@ services:
     build:
       context: .
       dockerfile: web-app.dockerfile
-    image: web-app:twitter-web-app
+    image: "web-app:${BUILD_NO}"
   master-service:
     build:
       context: .
       dockerfile: master.dockerfile
-    image: master:master-service
+    image: "master:${BUILD_NO}"
   worker:
     build:
       context: .
       dockerfile: worker.dockerfile
-    image: worker:twitter-worker
+    image: "worker:${BUILD_NO}"
