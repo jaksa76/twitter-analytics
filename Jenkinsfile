@@ -25,7 +25,7 @@ pipeline {
         }
         stage('Docker Deploy') {
             steps {
-                sh '/usr/share/google-cloud-sdk/bin/kubectl set image deployment/master-deployment worker=eu.gcr.io/genuine-axe-182507/master:${BUILD_NUMBER}'
+                sh '/usr/share/google-cloud-sdk/bin/kubectl set image deployment/master-deployment master=eu.gcr.io/genuine-axe-182507/master:${BUILD_NUMBER}'
                 sh '/usr/share/google-cloud-sdk/bin/kubectl set image deployment/worker-deployment worker=eu.gcr.io/genuine-axe-182507/worker:${BUILD_NUMBER}'
             }
         }
