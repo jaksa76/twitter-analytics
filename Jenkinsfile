@@ -1,11 +1,10 @@
 pipeline {
     agent any
-
+    environment {
+        BUILD_NO = ${BUILD_NUMBER}
+    }
     stages {
         stage('Build') {
-            environment {
-                BUILD_NO = ${BUILD_NUMBER}
-            }
             steps {
                 sh 'cp /usr/share/service-account.json ./service-account.json'
                 sh 'mvn package'
