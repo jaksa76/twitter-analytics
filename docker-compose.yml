@@ -1,0 +1,17 @@
+version: '2'
+services:
+  web-app:
+    build:
+      context: .
+      dockerfile: ./docker/web-app.Dockerfile
+    image: web-app
+  master-service:
+    build:
+      context: .
+      dockerfile: ./docker/master.Dockerfile
+    image: master
+  worker-service:
+    build:
+      context: .
+      dockerfile: ./docker/worker.Dockerfile
+    image: worker

@@ -3,6 +3,8 @@ FROM openjdk:9-jre-slim
 COPY ./target/master.jar /usr/src/ta/master/
 WORKDIR /usr/src/ta/master
 
-EXPOSE 4567
+ENV ENV=production
+
+EXPOSE 80
 
 CMD ["java", "-jar", "master.jar"]

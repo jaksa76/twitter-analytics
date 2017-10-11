@@ -15,7 +15,8 @@ public class WorkerRestClient implements WorkerClient {
 
     WorkerRestClient() throws IOException {
         client = new DefaultHttpClient();
-        masterUrl = new ConfigurationLoader().getConfigItem("masterUrl");
+        ConfigurationLoader config = new ConfigurationLoader();
+        masterUrl = config.getConfigItem("masterUrl") + ":" + config.getConfigItem("masterPort");
     }
 
     @Override
