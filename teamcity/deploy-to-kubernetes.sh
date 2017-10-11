@@ -3,7 +3,7 @@ set -e
 
 version=$1
 
-if [[ -z "kubectl get deployments 2>&1 | grep master-deployment" ]];
+if [[ -z `kubectl get deployments 2>&1 | grep master-deployment` ]];
 then
     echo Creating master deployment
     kubectl create -f ../kubernetes/cluster-master-config.yml
@@ -12,7 +12,7 @@ else
     kubectl set image deployment/master-deployment master=eu.gcr.io/apt-sentinel-180609/ta-master:$version
 fi
 
-if [[ -z "kubectl get deployments 2>&1 | grep worker-deployment" ]];
+if [[ -z `kubectl get deployments 2>&1 | grep worker-deployment` ]];
 then
     echo Creating worker deployment
     kubectl create -f ../kubernetes/cluster-worker-config.yml
@@ -21,7 +21,7 @@ else
     kubectl set image deployment/worker-deployment worker=eu.gcr.io/apt-sentinel-180609/ta-worker:$version
 fi
 
-if [[ -z "kubectl get deployments 2>&1 | grep web-app-deployment" ]];
+if [[ -z `kubectl get deployments 2>&1 | grep web-app-deployment` ]];
 then
     echo Creating worker deployment
     kubectl create -f ../kubernetes/cluster-web-app-config.yml
