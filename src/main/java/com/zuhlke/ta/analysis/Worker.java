@@ -35,7 +35,7 @@ public class Worker extends ReceiverAdapter implements ChannelListener {
         props = new Properties();
         props.load(Worker.class.getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
         analyzer = new SentimentAnalyzerImpl();
-        channel = new JChannel("udp.xml");
+        channel = new JChannel("jgroups.xml");
         channel.setReceiver(this).addChannelListener(this);
         channel.connect("analysis");
 

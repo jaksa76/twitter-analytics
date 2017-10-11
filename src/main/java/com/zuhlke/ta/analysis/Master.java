@@ -7,7 +7,7 @@ public class Master extends ReceiverAdapter implements ChannelListener {
     private int nextPartitionId = 0;
 
     public Master() throws Exception {
-        this.channel = new JChannel("udp.xml");
+        this.channel = new JChannel("jgroups.xml");
         this.channel.setReceiver(this).addChannelListener(this);
         channel.connect("analysis");
     }

@@ -60,6 +60,12 @@
 			<artifactId>jgroups</artifactId>
 			<version>4.0.7.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jgroups.kubernetes</groupId>
+			<artifactId>jgroups-kubernetes</artifactId>
+			<version>1.0.3.Final</version>
+		</dependency>
+
 
 
 		<dependency>

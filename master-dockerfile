@@ -1,4 +1,5 @@
 FROM openjdk:8u131-jre-alpine
 WORKDIR /
 ADD target/master.jar master.jar
+ADD control-kube.xml jgroups.xml
 CMD java -jar master.jar
