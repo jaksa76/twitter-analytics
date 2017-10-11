@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'cp /usr/share/service-account.json .'
+                sh 'cp /usr/share/service-account.json ./service-account.json'
                 sh 'mvn package'
                 sh 'docker-compose build'
                 sh 'docker tag web-app:twitter-web-app eu.gcr.io/genuine-axe-182507/web-app:twitter-web-app'

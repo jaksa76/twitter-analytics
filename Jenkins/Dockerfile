@@ -15,6 +15,7 @@ WORKDIR /usr/share
 RUN tar xvf google-cloud-sdk.tar.gz
 RUN CLOUDSDK_CORE_DISABLE_PROMPTS=1 ./google-cloud-sdk/install.sh
 COPY service-account.json /usr/share/service-account.json
-RUN ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file service-account.json
+COPY jenkins-account.json /usr/share/jenkins-account.json
+RUN ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file jenkins-account.json
 
 # RUN /usr/local/bin/install-plugins.sh workflow-aggregator blueocean
