@@ -2,10 +2,13 @@ pipeline {
     agent any
     environment {
         BUILD_NO = "${BUILD_NUMBER}"
-        KUBE_OUTPUT = sh (
-            script: '/usr/share/google-cloud-sdk/bin/kubectl get deployments master-deploymentsasdf 2>&1',
-            returnStdout: true
-        ).trim()
+        KUBE_OUTPUT = false
+        try {
+            sh '/usr/share/google-cloud-sdk/bin/kubectl get deployments master-deploymentsasdf'
+        }
+        catch (exc) {
+            KUBE_OUTPUT = true
+        }
     }
     stages {
         stage('Build') {
@@ -29,7 +32,7 @@ pipeline {
         }
         stage('Docker Create Deployment') {
             when {
-                expression {KUBE_OUTPUT.isEmpty()}
+                expression {KUBE_OUTPUT}
             }
             steps {
                 echo "Kubeoutput : ${KUBE_OUTPUT}"
