@@ -1,0 +1,21 @@
+version: '2'
+services:
+  tc-server:
+    image: jetbrains/teamcity-server:latest
+    ports:
+    - "8111:8111"
+    volumes:
+    - tc-server-data:/data/teamcity_server/datadir
+    - tc-server-logs:/opt/teamcity/logs
+  tc-agent:
+    build:
+      context: .
+      dockerfile: agent.dockerfile
+    environment:
+    - SERVER_URL=http://tc-server:8111
+    volumes:
+    - tc-agent-data:/data/teamcity_agent/conf
+volumes:
+  tc-server-data:
+  tc-server-logs:
+  tc-agent-data:
