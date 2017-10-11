@@ -1,0 +1,6 @@
+
+FROM openjdk:8u141-jre-slim
+RUN mkdir -p /opt/twit/lib
+ADD ./target/worker.jar /opt/twit/lib/
+ENV ENV=production
+CMD ["java", "-jar", "/opt/twit/lib/worker.jar"]
