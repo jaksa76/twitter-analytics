@@ -11,6 +11,6 @@ spec:
     spec:
       containers:
       - name: worker
-        image: eu.gcr.io/apt-sentinel-180609/ta-worker:v1
+        image: eu.gcr.io/apt-sentinel-180609/ta-worker:%VERSION%
         imagePullPolicy: Always
 ---

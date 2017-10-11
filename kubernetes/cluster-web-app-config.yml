@@ -26,6 +26,6 @@ spec:
     spec:
       containers:
       - name: web-app
-        image: eu.gcr.io/apt-sentinel-180609/ta-web-app:v1
+        image: eu.gcr.io/apt-sentinel-180609/ta-web-app:%VERSION%
         imagePullPolicy: Always
 ---
