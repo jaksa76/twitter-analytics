@@ -3,7 +3,8 @@ set -e
 
 version=$1
 
-if [[ -z "kubectl get deployments 2>&1 | grep master" ]] then
+if [[ -z "kubectl get deployments 2>&1 | grep master" ]];
+then
     kubectl create -f ../kubernetes/cluster-master-config.yml
     kubectl create -f ../kubernetes/cluster-worker-config.yml
     kubectl create -f ../kuberenetes/cluster-web-app-config.yml
