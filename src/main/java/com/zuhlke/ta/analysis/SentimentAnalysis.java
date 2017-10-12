@@ -29,7 +29,7 @@ public class SentimentAnalysis implements Serializable {
 
     private SentimentAnalysis() throws IOException {
         props = new Properties();
-        props.load(Worker.class.getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
+        props.load(getClass().getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
     }
 
     public static void main(String[] args) throws IOException {
@@ -64,7 +64,7 @@ public class SentimentAnalysis implements Serializable {
 
 
     private TableReference destTable(Properties props) {
-        return table(props.getProperty("projectId"), props.getProperty("analysedTweetsDataset"), props.getProperty("analysedTweetsTable"));
+        return table(props.getProperty("projectId"), props.getProperty("analysedTweetsDataset"), props.getProperty("outputTweetsTable"));
     }
 
     private TableReference table(String projectId, String datasetId, String tableId) {
