@@ -27,31 +27,19 @@ import static java.util.Arrays.asList;
 public class SentimentAnalysis implements Serializable {
     private static SentimentAnalyzer analyzer = new SentimentAnalyzerImpl();
     private Properties props;
-    private TableReference srcTable;
-    private TableReference destTable;
-    private PipelineOptions pipelineOptions;
 
     public SentimentAnalysis() throws IOException {
         props = new Properties();
         props.load(Worker.class.getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
-        srcTable = new TableReference();
-        srcTable.setProjectId(props.getProperty("projectId"));
-        srcTable.setDatasetId(props.getProperty("inputTweetsDataset"));
-        srcTable.setTableId(props.getProperty("inputTweetsTable"));
-        destTable = new TableReference();
-        destTable.setProjectId(props.getProperty("projectId"));
-        destTable.setDatasetId(props.getProperty("analysedTweetsDataset"));
-        destTable.setTableId(props.getProperty("analysedTweetsTable"));
-        pipelineOptions = getOptions();
     }
 
     public static void main(String[] args) throws IOException {
         new SentimentAnalysis().analyseAllTweets();
     }
 
-    public void analyseAllTweets() {
-        Pipeline pipeline = Pipeline.create(pipelineOptions);
-        pipeline.apply(BigQueryIO.read().from(srcTable))
+    public void analyseAllTweets() throws IOException {
+        Pipeline pipeline = Pipeline.create(getOptions());
+        pipeline.apply(BigQueryIO.read().from(srcTable(props)))
                 .apply(ParDo.of(new DoFn<TableRow, TableRow>() {
                     @ProcessElement
                     public void processElement(ProcessContext ctx) {
@@ -62,13 +50,30 @@ public class SentimentAnalysis implements Serializable {
                                 .set("sentiment", analyzer.getSentiment((String) input.get("content"))));
                     }
                 }))
-                .apply(BigQueryIO.writeTableRows().to(destTable).withSchema(schema(asList(
+                .apply(BigQueryIO.writeTableRows().to(destTable(props)).withSchema(schema(asList(
                         field("timestamp", "STRING"),
                         field("content", "STRING"),
                         field("sentiment", "FLOAT")
                 ))));
 
         pipeline.run().waitUntilFinish();
+    }
+
+    private TableReference srcTable(Properties props) {
+        return table(props.getProperty("projectId"), props.getProperty("inputTweetsDataset"), props.getProperty("inputTweetsTable"));
+    }
+
+
+    private TableReference destTable(Properties props) {
+        return table(props.getProperty("projectId"), props.getProperty("outputTweetsDataset"), props.getProperty("outputTweetsTable"));
+    }
+
+    private TableReference table(String projectId, String datasetId, String tableId) {
+        TableReference tableReference = new TableReference();
+        tableReference.setProjectId(projectId);
+        tableReference.setDatasetId(datasetId);
+        tableReference.setTableId(tableId);
+        return tableReference;
     }
 
     private TableSchema schema(List<TableFieldSchema> fields) {
