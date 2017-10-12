@@ -3,3 +3,4 @@ target
 tweets.db
 
 .kube/
+service-account.json
