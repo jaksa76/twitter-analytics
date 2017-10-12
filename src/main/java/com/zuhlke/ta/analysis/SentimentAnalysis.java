@@ -62,7 +62,7 @@ public class SentimentAnalysis {
                         ctx.output(new TableRow()
                                 .set("timestamp", input.get("timestamp"))
                                 .set("content", input.get("content"))
-                                .set("sentiment", analyzer.getSentiment((String) input.get("content"))));
+                                .set("sentiment", new SentimentAnalyzerImpl().getSentiment((String) input.get("content"))));
                     }
                 }))
                 .apply(BigQueryIO.writeTableRows().to(destTable).withSchema(schema(asList(
