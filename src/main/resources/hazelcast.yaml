@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: the-twit-hazelcast
+  # The labels will be applied automatically
+  # from the labels in the pod template, if not set
+  # labels:
+    # app: cassandra
+spec:
+  replicas: 5
+  # The selector will be applied automatically
+  # from the labels in the pod template, if not set.
+  # selector:
+      # app: cassandra
+  template:
+    metadata:
+      labels:
+        app: the-twit-hazelcast
+    spec:
+      containers:
+        - resources:
+            limits:
+              cpu: 1
+          image: gcr.io/the-twit-hazelcast/twit-worker
+          name: twit-worker
+          ports:
+            - hazelcastPort1: 5701
+              name: hazelcast-port-1
+            - hazelcastPort1: 5702
+              name: hazelcast-port-2
+            - hazelcastPort1: 5703
+              name: hazelcast-port-3
+            - hazelcastPort1: 5704
+              name: hazelcast-port-4
+            - hazelcastPort1: 5705
+              name: hazelcast-port-5
