@@ -25,12 +25,12 @@ spec:
           name: twit-worker
           ports:
             - containerPort: 5701
-              name: hazelcast-port-1
+              name: hazel-port-1
             - containerPort: 5702
-              name: hazelcast-port-2
+              name: hazel-port-2
             - containerPort: 5703
-              name: hazelcast-port-3
+              name: hazel-port-3
             - containerPort: 5704
-              name: hazelcast-port-4
+              name: hazel-port-4
             - containerPort: 5705
-              name: hazelcast-port-5
+              name: hazel-port-5
