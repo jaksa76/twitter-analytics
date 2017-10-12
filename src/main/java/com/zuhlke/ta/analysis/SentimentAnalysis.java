@@ -18,7 +18,6 @@ import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
 
 import java.io.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -28,7 +27,7 @@ public class SentimentAnalysis implements Serializable {
     private static SentimentAnalyzer analyzer = new SentimentAnalyzerImpl();
     private Properties props;
 
-    public SentimentAnalysis() throws IOException {
+    private SentimentAnalysis() throws IOException {
         props = new Properties();
         props.load(Worker.class.getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
     }
@@ -37,7 +36,7 @@ public class SentimentAnalysis implements Serializable {
         new SentimentAnalysis().analyseAllTweets();
     }
 
-    public void analyseAllTweets() throws IOException {
+    private void analyseAllTweets() throws IOException {
         Pipeline pipeline = Pipeline.create(getOptions());
         pipeline.apply(BigQueryIO.read().from(srcTable(props)))
                 .apply(ParDo.of(new DoFn<TableRow, TableRow>() {
@@ -65,7 +64,7 @@ public class SentimentAnalysis implements Serializable {
 
 
     private TableReference destTable(Properties props) {
-        return table(props.getProperty("projectId"), props.getProperty("outputTweetsDataset"), props.getProperty("outputTweetsTable"));
+        return table(props.getProperty("projectId"), props.getProperty("analysedTweetsDataset"), props.getProperty("analysedTweetsTable"));
     }
 
     private TableReference table(String projectId, String datasetId, String tableId) {
