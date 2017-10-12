@@ -24,15 +24,13 @@ spec:
           image: gcr.io/the-twit-hazelcast/twit-worker
           name: twit-worker
           ports:
-            - containerPort: 5700
-              name: intra-node
-            - hazelcastPort1: 5701
+            - containerPort: 5701
               name: hazelcast-port-1
-            - hazelcastPort2: 5702
+            - containerPort: 5702
               name: hazelcast-port-2
-            - hazelcastPort3: 5703
+            - containerPort: 5703
               name: hazelcast-port-3
-            - hazelcastPort4: 5704
+            - containerPort: 5704
               name: hazelcast-port-4
-            - hazelcastPort5: 5705
+            - containerPort: 5705
               name: hazelcast-port-5
