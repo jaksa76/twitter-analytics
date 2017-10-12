@@ -1,6 +1,0 @@
-FROM openjdk:8u131-jre-alpine
-WORKDIR /
-ADD target/worker.jar worker.jar
-ADD service-account.json service-account.json
-ADD control-kube.xml jgroups.xml
-CMD java -jar worker.jar

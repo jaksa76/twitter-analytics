@@ -7,10 +7,6 @@ import com.google.cloud.bigquery.*;
 import com.google.common.base.Stopwatch;
 import com.zuhlke.ta.prototype.SentimentAnalyzer;
 import com.zuhlke.ta.sentiment.SentimentAnalyzerImpl;
-import org.jgroups.ChannelListener;
-import org.jgroups.JChannel;
-import org.jgroups.Message;
-import org.jgroups.ReceiverAdapter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,24 +16,19 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class Worker extends ReceiverAdapter implements ChannelListener {
+public class Worker {
     private BigQuery bigQuery;
     private SentimentAnalyzer analyzer;
     private Properties props;
-    private JChannel channel;
 
     public static void main(String[] args) throws Exception {
         Worker worker = new Worker();
-        worker.work();
     }
 
     public Worker() throws Exception {
         props = new Properties();
         props.load(Worker.class.getClassLoader().getResourceAsStream("configuration/bigquery.properties"));
         analyzer = new SentimentAnalyzerImpl();
-        channel = new JChannel("jgroups.xml");
-        channel.setReceiver(this).addChannelListener(this);
-        channel.connect("analysis");
 
         File credentialsPath = new File(props.getProperty("serviceAccountCredFile"));
         try (FileInputStream serviceAccountStream = new FileInputStream(credentialsPath)) {
@@ -110,49 +101,7 @@ public class Worker extends ReceiverAdapter implements ChannelListener {
         }
     }
 
-    private void work() throws Exception {
-        requestNextPartition();
-    }
-
-    private JChannel requestNextPartition() throws Exception {
-        System.out.println("requesting partition");
-        return channel.send(new Message(null, new PartitionRequest()));
-    }
-
-    private void printMembers() {
-        channel.getView().getMembers().forEach(m -> System.out.println(m));
-    }
-
     private void analyse(int partition) throws TimeoutException, InterruptedException, IOException {
         analyse(partition, props.getProperty("inputTweetsDataset"), props.getProperty("inputTweetsTable"), props.getProperty("analysedTweetsDataset"), props.getProperty("analysedTweetsTable"));
-    }
-
-    @Override
-    public void receive(Message message) {
-        System.out.println("Worker.receive");
-        if (message.getObject() instanceof TablePartition) {
-            TablePartition partition = message.getObject();
-            try {
-                analyse(partition.getPartition());
-                requestNextPartition();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void channelConnected(JChannel channel) {
-        System.out.println("Worker.channelConnected");
-    }
-
-    @Override
-    public void channelDisconnected(JChannel channel) {
-        System.out.println("Worker.channelDisconnected");
-    }
-
-    @Override
-    public void channelClosed(JChannel channel) {
-        System.out.println("Worker.channelClosed");
     }
 }
