@@ -17,19 +17,16 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.transforms.DoFn;
 import org.apache.beam.sdk.transforms.ParDo;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
 import static java.util.Arrays.asList;
 
-public class SentimentAnalysis {
+public class SentimentAnalysis implements Serializable {
+    private static SentimentAnalyzer analyzer = new SentimentAnalyzerImpl();
     private Properties props;
-    private SentimentAnalyzer analyzer = new SentimentAnalyzerImpl();
     private TableReference srcTable;
     private TableReference destTable;
     private PipelineOptions pipelineOptions;
@@ -62,7 +59,7 @@ public class SentimentAnalysis {
                         ctx.output(new TableRow()
                                 .set("timestamp", input.get("timestamp"))
                                 .set("content", input.get("content"))
-                                .set("sentiment", new SentimentAnalyzerImpl().getSentiment((String) input.get("content"))));
+                                .set("sentiment", analyzer.getSentiment((String) input.get("content"))));
                     }
                 }))
                 .apply(BigQueryIO.writeTableRows().to(destTable).withSchema(schema(asList(
