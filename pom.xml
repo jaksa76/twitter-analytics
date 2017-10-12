@@ -51,9 +51,19 @@
 			<version>3.1.0</version>
 		</dependency>
 		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+		<dependency>
 			<groupId>com.google.cloud.dataflow</groupId>
 			<artifactId>google-cloud-dataflow-java-sdk-all</artifactId>
 			<version>[2.1.0, 2.99)</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.cloud</groupId>
+			<artifactId>google-cloud-bigquery</artifactId>
+			<version>0.24.0-beta</version>
 		</dependency>
 
 		<!-- testing -->
