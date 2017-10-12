@@ -88,7 +88,7 @@ public class SentimentAnalysis implements Serializable {
         options.setProject(props.getProperty("projectId"));
         options.setRunner(DataflowRunner.class);
         options.setGcpCredential(getCredentials());
-        options.setGcpTempLocation("gs://tweetanalyser-temp/dataflow/");
+        options.setGcpTempLocation("gs://tweetanalyser-temp");
         return options;
     }
 
