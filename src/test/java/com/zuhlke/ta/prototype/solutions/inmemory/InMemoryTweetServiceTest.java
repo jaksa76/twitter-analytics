@@ -1,7 +1,6 @@
 package com.zuhlke.ta.prototype.solutions.inmemory;
 
 import com.zuhlke.ta.prototype.*;
-import com.zuhlke.ta.prototype.solutions.common.PersistentTweetService;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -25,7 +24,7 @@ public class InMemoryTweetServiceTest {
             .findFirst()
             .map(Map.Entry::getValue)
             .orElseThrow(() -> new AssertionError("missing sentiment for " + text));
-    private final PersistentTweetService service = new InMemoryTweetService(analyzer);
+    private final TweetService service = new InMemoryTweetService(analyzer);
 
     @SuppressWarnings("unchecked")
     @Test

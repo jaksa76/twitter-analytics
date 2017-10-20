@@ -2,14 +2,8 @@ package com.zuhlke.ta.web;
 
 import com.google.common.base.Strings;
 import com.zuhlke.ta.prototype.*;
-import com.zuhlke.ta.prototype.solutions.common.TweetStore;
 import com.zuhlke.ta.prototype.solutions.inmemory.InMemoryTweetService;
-import com.zuhlke.ta.prototype.solutions.inmemory.InMemoryTweetStore;
-import com.zuhlke.ta.prototype.solutions.common.PersistentTweetService;
-import com.zuhlke.ta.prototype.solutions.mapdb.MapDBTweetService;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
-import com.zuhlke.ta.twitterclient.TwitterClientRunner;
-import org.jetbrains.annotations.NotNull;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -27,24 +21,24 @@ import static spark.Spark.post;
 public class Application {
     public static void main(String[] args) throws IOException, URISyntaxException {
         SentimentAnalyzer sentimentAnalyzer = new TwitterSentimentAnalyzerImpl();
+
+        // you should replace this with your own implementation
         TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
-//        TweetService tweetService = new MapDBTweetService(sentimentAnalyzer);
-        JobService jobService = new JobService(tweetService);
+
+        // import some tweets from a file
         Importer importer = new Importer(tweetService);
         importer.importTweetsFrom(new File("test_set_tweets.txt"));
 
-        FreeMarkerEngine freeMarker = new FreeMarkerEngine();
+        JobService jobService = new JobService(tweetService);
 
-//        staticFiles.location("/spark/template/freemarker");
+        // set up the web application
+        FreeMarkerEngine freeMarker = new FreeMarkerEngine();
         get("/", (req, resp) -> homepageData(jobService), freeMarker);
         get("/results/", (req, resp) -> jobService.getResults());
         get("/pending/", (req, resp) -> jobService.getPending());
         post("/jobs/", (req, resp) -> enqueueJob(jobService, req, resp));
-
-        TwitterClientRunner.runClient(tweetService);
     }
 
-    @NotNull
     private static ModelAndView homepageData(JobService jobService) {
         Map<String, Object> model = new HashMap<>();
         model.put("results", jobService.getResults());
@@ -52,7 +46,6 @@ public class Application {
         return new ModelAndView(model, "index.html");
     }
 
-    @NotNull
     private static Object enqueueJob(JobService jobService, Request req, Response resp) {
         String keyword = req.queryMap("keyword").value();
         Query q = new Query(keyword);
