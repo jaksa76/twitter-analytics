@@ -2,13 +2,14 @@ package com.zuhlke.ta.web;
 
 import com.google.common.base.Strings;
 import com.zuhlke.ta.prototype.*;
-import com.zuhlke.ta.prototype.solutions.bigquery.BigQueryTweetService;
+import com.zuhlke.ta.prototype.solutions.inmemory.InMemoryTweetService;
 import com.zuhlke.ta.sentiment.TwitterSentimentAnalyzerImpl;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.template.freemarker.FreeMarkerEngine;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -20,22 +21,22 @@ import static spark.Spark.post;
 public class Application {
     public static void main(String[] args) throws IOException, URISyntaxException {
         SentimentAnalyzer sentimentAnalyzer = new TwitterSentimentAnalyzerImpl();
-        //TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
-//        TweetService tweetService = new MapDBTweetService(sentimentAnalyzer);
-        TweetService tweetService = new BigQueryTweetService();
+
+        // you should replace this with your own implementation
+        TweetService tweetService = new InMemoryTweetService(sentimentAnalyzer);
+
+        // import some tweets from a file
+        Importer importer = new Importer(tweetService);
+        importer.importTweetsFrom(new File("test_set_tweets.txt"));
+
         JobService jobService = new JobService(tweetService);
-        //Importer importer = new Importer(tweetService);
-        //importer.importTweetsFrom(new File("test_set_tweets.txt"));
 
+        // set up the web application
         FreeMarkerEngine freeMarker = new FreeMarkerEngine();
-
-//        staticFiles.location("/spark/template/freemarker");
         get("/", (req, resp) -> homepageData(jobService), freeMarker);
         get("/results/", (req, resp) -> jobService.getResults());
         get("/pending/", (req, resp) -> jobService.getPending());
         post("/jobs/", (req, resp) -> enqueueJob(jobService, req, resp));
-
-        //TwitterClientRunner.runClient(tweetService);
     }
 
     private static ModelAndView homepageData(JobService jobService) {
